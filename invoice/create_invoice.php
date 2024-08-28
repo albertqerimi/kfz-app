@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Check if product exists, if not, add it to the products table
             $product_id = null;
             $product_name = $conn->real_escape_string($product_name);
-            $product_check_sql = "SELECT id FROM products WHERE name = '$product_name' AND is_deleted = 0";
+            $product_check_sql = "SELECT id FROM products WHERE name = '$product_name'";
             $product_check_result = $conn->query($product_check_sql);
             if ($product_check_result->num_rows > 0) {
                 $product_row = $product_check_result->fetch_assoc();
