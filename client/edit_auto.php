@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <form method="post">
         <div class="form-group">
             <label for="vin">VIN:</label>
-            <input type="text" class="form-control" id="vin" name="vin" value="<?php echo htmlspecialchars($auto['VIN']); ?>" required>
+            <input type="text" class="form-control" id="vin" name="vin" value="<?php echo htmlspecialchars($auto['vin']); ?>" required>
         </div>
         <div class="form-group">
             <label for="make">Make:</label>

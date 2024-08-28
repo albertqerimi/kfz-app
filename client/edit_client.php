@@ -95,7 +95,7 @@ $autos_result = $autos_stmt->get_result();
         </div>
         <div class="form-group">
             <label for="telephone">Telephone:</label>
-            <input type="text" class="form-control" id="telephone" name="telephone" value="<?php echo htmlspecialchars($client['telephone']); ?>" required>
+            <input type="text" class="form-control" id="telephone" name="telephone" value="<?php echo htmlspecialchars($client['phone']); ?>" required>
         </div>
         <div class="form-group">
             <label for="email">Email:</label>
@@ -122,7 +122,7 @@ $autos_result = $autos_stmt->get_result();
                 <?php while ($auto = $autos_result->fetch_assoc()): 
                     ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($auto['VIN']); ?></td>
+                        <td><?php echo htmlspecialchars($auto['vin']); ?></td>
                         <td><?php echo htmlspecialchars($auto['make']); ?></td>
                         <td><?php echo htmlspecialchars($auto['model']); ?></td>
                         <td><?php echo htmlspecialchars($auto['year']); ?></td>

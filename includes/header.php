@@ -25,7 +25,7 @@
                     <a class="nav-link" href="/kfz-app/invoice/create_invoice.php">Create Invoice</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/kfz-app/invovices/list_invoices.php">Invoices</a>
+                    <a class="nav-link" href="/kfz-app/invoice/list_invoices.php">Invoices</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/kfz-app/product/list_products.php">Products</a>

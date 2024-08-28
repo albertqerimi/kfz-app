@@ -11,7 +11,7 @@ if ($conn->connect_error) {
 }
 
 // Fetch clients
-$client_sql = "SELECT id, name, street, house_number, postal_code, city, state, country, telephone, email FROM clients";
+$client_sql = "SELECT id, name, street, house_number, postal_code, city, state, country, phone, email FROM clients";
 $result = $conn->query($client_sql);
 ?>
 
@@ -24,7 +24,7 @@ $result = $conn->query($client_sql);
                 <tr>
                     <th>Name</th>
                     <th>Address</th>
-                    <th>Telephone</th>
+                    <th>Phone</th>
                     <th>Email</th>
                     <th>Actions</th>
                 </tr>
@@ -36,7 +36,7 @@ $result = $conn->query($client_sql);
                         <td><?php echo htmlspecialchars($row['street']) . ' ' . htmlspecialchars($row['house_number']) . ', ' .
                                     htmlspecialchars($row['postal_code']) . ' ' . htmlspecialchars($row['city']) . ', ' .
                                     htmlspecialchars($row['state']) . ', ' . htmlspecialchars($row['country']); ?></td>
-                        <td><?php echo htmlspecialchars($row['telephone']); ?></td>
+                        <td><?php echo htmlspecialchars($row['phone']); ?></td>
                         <td><?php echo htmlspecialchars($row['email']); ?></td>
                         <td>
                             <a href="edit_client.php?id=<?php echo urlencode($row['id']); ?>" class="btn btn-warning btn-sm">Edit</a>
