@@ -9,8 +9,24 @@ $conn = new mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+$client_id = isset($_GET['client_id']) ? intval($_GET['client_id']) : 0;
 
-$client_id = intval($_GET['client_id']);
+if ($client_id <= 0) {
+    // Show an error message if no valid ID is present
+    die("<div class='container mt-4'><div class='alert alert-danger'>Ungültige Client ID. Bitte gehen Sie zurück und versuchen Sie es erneut.</div></div>");
+}
+
+// Check if the client ID exists in the database
+$client_check_sql = "SELECT id FROM clients WHERE id = ?";
+$client_check_stmt = $conn->prepare($client_check_sql);
+$client_check_stmt->bind_param('i', $client_id);
+$client_check_stmt->execute();
+$client_check_stmt->store_result();
+
+if ($client_check_stmt->num_rows == 0) {
+    // If the client ID does not exist, show an error message
+    die("<div class='container mt-4'><div class='alert alert-danger'>Ungültige Client ID. Bitte gehen Sie zurück und versuchen Sie es erneut.</div></div>");
+}
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -39,7 +39,9 @@ $invoice_result = $conn->query($invoice_sql);
                     <td><?php echo htmlspecialchars($invoice['discount']); ?></td>
                     <td><?php echo htmlspecialchars($invoice['tax']); ?></td>
                     <td>
-                        <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['id']); ?>" class="btn btn-info btn-sm">View</a>
+                        <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['id']); ?>" class="btn btn-info btn-sm">Anzeigen</a>
+                        <a href="edit_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['id']); ?>" class="btn btn-warning btn-sm">Bearbeiten</a>
+                        <a href="generate_pdf.php?invoice_id=<?php echo htmlspecialchars($invoice['id']); ?>" class="btn btn-primary btn-sm" target="_blank">PDF drucken</a>
                     </td>
                 </tr>
             <?php endwhile; ?>
