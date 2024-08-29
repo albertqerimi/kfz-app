@@ -1,12 +1,29 @@
-<?php include '../includes/header.php'; ?>
+<?php include '../includes/header.php'; 
 
+function generate_kundennummer($conn) {
+    do {
+        $kundennummer = 'KdNR-' . strtoupper(bin2hex(random_bytes(4)));
+        $check_sql = "SELECT COUNT(*) FROM clients WHERE kundennummer = ?";
+        $check_stmt = $conn->prepare($check_sql);
+        $check_stmt->bind_param('s', $kundennummer);
+        $check_stmt->execute();
+        $check_result = $check_stmt->get_result();
+        $count = $check_result->fetch_row()[0];
+    } while ($count > 0);
+
+    return $kundennummer;
+}
+
+$kundennummer = generate_kundennummer($conn);
+
+?>
 <div class="container mt-4">
     <h2>Kundenregistrierung</h2>
     <form action="save_client.php" method="POST">
         <!-- Client Name -->
         <div class="form-group">
-            <label for="name">Kundenname:</label>
-            <input type="text" class="form-control" id="name" name="name" required>
+            <label for="name">Kundennamer:</label>
+            <input type="text" class="form-control" id="name" name="name"  disabled required>
         </div>
 
         <!-- Address Details -->

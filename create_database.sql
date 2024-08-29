@@ -9,9 +9,7 @@ DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS invoice_items;
 DROP TABLE IF EXISTS products;
 
--- Create clients table
 CREATE TABLE IF NOT EXISTS clients (
-
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     street VARCHAR(255) NOT NULL,
@@ -21,9 +19,15 @@ CREATE TABLE IF NOT EXISTS clients (
     state VARCHAR(255),
     country VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
-    email VARCHAR(255) NOT NULL
-
+    email VARCHAR(255) NOT NULL,
+    vin_number VARCHAR(50) NOT NULL,
+    brand VARCHAR(100) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    license_plate VARCHAR(20) NOT NULL,
+    tuv_date DATE NOT NULL,
+    kundennummer VARCHAR(50) NOT NULL UNIQUE
 );
+
 
 -- Create autos table
 CREATE TABLE autos (
@@ -70,9 +74,13 @@ CREATE TABLE IF NOT EXISTS invoice_items (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
 );
 -- Insert sample data (Optional)
-INSERT INTO clients (name, email, phone) VALUES
-('John Doe', 'john.doe@example.com', '123-456-7890'),
-('Jane Smith', 'jane.smith@example.com', '098-765-4321');
+INSERT INTO clients (name, street, house_number, postal_code, city, state, country, phone, email, vin_number, brand, model, license_plate, tuv_date, kundennummer) VALUES
+('John Doe', '123 Elm St', '10A', '12345', 'Springfield', 'IL', 'USA', '123-456-7890', 'john.doe@example.com', '1HGBH41JXMN109186', 'Toyota', 'Camry', 'XYZ123', '2025-05-20', 'KdNR00001'),
+('Jane Smith', '456 Oak St', '20B', '23456', 'Shelbyville', 'IL', 'USA', '098-765-4321', 'jane.smith@example.com', '2HGBH41JXMN109187', 'Honda', 'Civic', 'ABC456', '2026-06-15', 'KdNR00002'),
+('Alice Johnson', '789 Pine St', '30C', '34567', 'Capital City', 'IL', 'USA', '234-567-8901', 'alice.johnson@example.com', '3HGBH41JXMN109188', 'Ford', 'Focus', 'LMN789', '2027-07-10', 'KdNR00003'),
+('Bob Brown', '135 Maple St', '40D', '45678', 'Eastwood', 'IL', 'USA', '345-678-9012', 'bob.brown@example.com', '4HGBH41JXMN109189', 'Chevrolet', 'Malibu', 'OPQ012', '2028-08-25', 'KdNR00004'),
+('Carol White', '246 Cedar St', '50E', '56789', 'Westfield', 'IL', 'USA', '456-789-0123', 'carol.white@example.com', '5HGBH41JXMN109190', 'Nissan', 'Altima', 'RST345', '2029-09-30', 'KdNR00005');
+
 
 INSERT INTO autos (client_id, license_plate, make, model, year, vin) VALUES
 (1, 'ABC123', 'Toyota', 'Corolla', 2020, '1HGBH41JXMN109186'),
