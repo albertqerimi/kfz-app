@@ -1,7 +1,6 @@
 <?php
 include '../config.php';
 
-// Create a new database connection
 $conn = new mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
 
 // Check the connection
@@ -9,42 +8,29 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Retrieve client data
-$name = $conn->real_escape_string($_POST['name']);
-$street = $conn->real_escape_string($_POST['street']);
-$house_number = $conn->real_escape_string($_POST['house_number']);
-$postal_code = $conn->real_escape_string($_POST['postal_code']);
-$city = $conn->real_escape_string($_POST['city']);
-$state = $conn->real_escape_string($_POST['state']);
-$country = $conn->real_escape_string($_POST['country']);
-$telephone = $conn->real_escape_string($_POST['telephone']);
-$email = $conn->real_escape_string($_POST['email']);
-$autos = $conn->real_escape_string($_POST['autos']);
+// Retrieve form data
+$name = $_POST['name'];
+$street = $_POST['street'];
+$house_number = $_POST['house_number'];
+$postal_code = $_POST['postal_code'];
+$city = $_POST['city'];
+$state = $_POST['state'];
+$country = $_POST['country'];
+$telephone = $_POST['telephone'];
+$email = $_POST['email'];
+$vin_number = $_POST['vin_number'];
+$brand = $_POST['brand'];
+$model = $_POST['model'];
+$license_plate = $_POST['license_plate'];
+$tuv_date = $_POST['tuv_date'];
 
-// Insert the client data
-$sql = "INSERT INTO clients (name, street, house_number, postal_code, city, state, country, telephone, email) 
-        VALUES ('$name', '$street', '$house_number', '$postal_code', '$city', '$state', '$country', '$telephone', '$email')";
+// Insert client data into the database
+$sql = "INSERT INTO clients (name, street, house_number, postal_code, city, state, country, telephone, email, vin_number, brand, model, license_plate, tuv_date)
+VALUES ('$name', '$street', '$house_number', '$postal_code', '$city', '$state', '$country', '$telephone', '$email', '$vin_number', '$brand', '$model', '$license_plate', '$tuv_date')";
 
 if ($conn->query($sql) === TRUE) {
-    $client_id = $conn->insert_id; // Get the inserted client ID
-
-    // Split autos by comma
-    $auto_entries = explode(',', $autos);
-
-    foreach ($auto_entries as $auto_entry) {
-        list($license_plate, $model, $year) = explode(':', $auto_entry);
-        
-        $license_plate = $conn->real_escape_string(trim($license_plate));
-        $model = $conn->real_escape_string(trim($model));
-        $year = intval(trim($year));
-
-        // Insert each auto
-        $sql_auto = "INSERT INTO autos (client_id, license_plate, model, year) 
-                     VALUES ('$client_id', '$license_plate', '$model', '$year')";
-        $conn->query($sql_auto);
-    }
-
-    echo "New client and autos registered successfully";
+    echo "New client registered successfully";
+    header('Location: ../index.php');
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
 }
