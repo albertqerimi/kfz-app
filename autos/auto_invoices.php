@@ -1,6 +1,6 @@
 <?php
 include '../includes/header.php';
-include '../config.php';
+include '../config.php'; 
 
 // Check if 'auto_id' is provided in the URL
 if (!isset($_GET['auto_id']) || !is_numeric($_GET['auto_id'])) {
