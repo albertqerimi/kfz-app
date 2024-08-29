@@ -22,9 +22,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="/kfz-app/index.php">Startseite</a>
-                </li>
+              
                 <li class="nav-item">
                     <a class="nav-link" href="/kfz-app/client/list_clients.php">Kunden</a>
                 </li>
