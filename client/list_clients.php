@@ -38,14 +38,14 @@ $customer_result = $customer_stmt->get_result();
 ?>
 
 <div class="container mt-4">
-    <h2>Client List</h2>
+    <h2>Kundenliste</h2>
     <!-- Search Form -->
     <form action="list_clients.php" method="GET">
         <div class="form-group">
-            <label for="search">Search:</label>
-            <input type="text" class="form-control" id="search" name="search" value="<?php echo htmlspecialchars($search_query); ?>">
+            <input type="text" class="form-control" placeholder="suche" id="Search" name="search" value="<?php echo htmlspecialchars($search_query); ?>">
         </div>
-        <button type="submit" class="btn btn-primary">Search</button>
+        <button type="submit" class="btn btn-primary">Suche</button>
+        <a href="/kfz-app/client/register_client.php" class="btn btn-primary">Kunde Registrieren</a>
     </form>
 
     <table class="table mt-3">
@@ -68,7 +68,7 @@ $customer_result = $customer_stmt->get_result();
                     <td><?php echo htmlspecialchars($customer['email']); ?></td>
                     <td><?php echo htmlspecialchars($customer['phone']); ?></td>
                     <td>
-                        <a href="edit_client.php?client_id=<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-info btn-sm">Edit</a>
+                        <a href="edit_client.php?client_id=<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-info btn-sm">Bearbeiten</a>
                     </td>
                 </tr>
             <?php endwhile; ?>
@@ -84,7 +84,7 @@ $customer_result = $customer_stmt->get_result();
 
         // Display "First" link
         if ($total_pages > 1) {
-            echo '<li class="page-item ' . ($page == 1 ? 'disabled' : '') . '"><a class="page-link" href="list_clients.php?page=1&search=' . urlencode($search_query) . '">First</a></li>';
+            echo '<li class="page-item ' . ($page == 1 ? 'disabled' : '') . '"><a class="page-link" href="list_clients.php?page=1&search=' . urlencode($search_query) . '">Erste</a></li>';
         }
 
         $start_page = max(1, $page - floor($max_links / 2));
@@ -105,7 +105,7 @@ $customer_result = $customer_stmt->get_result();
 
         // Display "Last" link
         if ($total_pages > 1) {
-            echo '<li class="page-item ' . ($page == $total_pages ? 'disabled' : '') . '"><a class="page-link" href="list_clients.php?page=' . $total_pages . '&search=' . urlencode($search_query) . '">Last</a></li>';
+            echo '<li class="page-item ' . ($page == $total_pages ? 'disabled' : '') . '"><a class="page-link" href="list_clients.php?page=' . $total_pages . '&search=' . urlencode($search_query) . '">Letzte</a></li>';
         }
         ?>
     </ul>

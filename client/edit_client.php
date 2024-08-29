@@ -1,6 +1,6 @@
 <?php
 include '../includes/header.php';
-include '../config.php';
+include '../config.php'; 
 
 // Create a new database connection
 $conn = new mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
@@ -80,9 +80,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Execute the statement
     if ($update_stmt->execute()) {
-        echo "<div class='alert alert-success'>Client updated successfully!</div>";
+        echo "<div class='alert alert-success'>Kunde erfolgreich aktualisiert!</div>";
     } else {
-        echo "<div class='alert alert-danger'>Error updating client: " . $conn->error . "</div>";
+        echo "<div class='alert alert-danger'>Fehler beim Aktualisieren des Kunden:" . $conn->error . "</div>";
     }
 
     // Close statement and connection
@@ -99,41 +99,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="hidden" name="client_id" value="<?php echo htmlspecialchars($client['id']); ?>">
         
         <div class="form-group">
-            <label for="name">Kundennamer Name:</label>
+            <label for="name">Kunden Nummer :</label>
             <input type="text" class="form-control" disabled id="name" name="name" value="<?php echo htmlspecialchars($client['kundennummer']); ?>" required>
         </div>
 
         <!-- Client Name -->
         <div class="form-group">
-            <label for="name">Client Name:</label>
+            <label for="name">Kunden Name:</label>
             <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($client['name']); ?>" required>
         </div>
 
         <!-- Address Details -->
         <h4>Address Details</h4>
         <div class="form-group">
-            <label for="street">Street:</label>
-            <input type="text" class="form-control" id="street" name="street" value="<?php echo htmlspecialchars($client['street']); ?>" required>
+            <label for="street">Straße:</label>
+            <input type="text" class="form-control" id="street" name="street" value="<?php echo htmlspecialchars($client['street']); ?>" >
         </div>
         <div class="form-group">
-            <label for="house_number">House Number:</label>
-            <input type="text" class="form-control" id="house_number" name="house_number" value="<?php echo htmlspecialchars($client['house_number']); ?>" required>
+            <label for="house_number">Hausnummer</label>
+            <input type="text" class="form-control" id="house_number" name="house_number" value="<?php echo htmlspecialchars($client['house_number']); ?>" >
         </div>
         <div class="form-group">
-            <label for="postal_code">Postal Code:</label>
-            <input type="text" class="form-control" id="postal_code" name="postal_code" value="<?php echo htmlspecialchars($client['postal_code']); ?>" required>
+            <label for="postal_code">Postleitzahl:</label>
+            <input type="text" class="form-control" id="postal_code" name="postal_code" value="<?php echo htmlspecialchars($client['postal_code']); ?>" >
         </div>
         <div class="form-group">
-            <label for="city">City:</label>
-            <input type="text" class="form-control" id="city" name="city" value="<?php echo htmlspecialchars($client['city']); ?>" required>
+            <label for="city">Stadt:</label>
+            <input type="text" class="form-control" id="city" name="city" value="<?php echo htmlspecialchars($client['city']); ?>" >
         </div>
         <div class="form-group">
-            <label for="state">State/Province:</label>
+            <label for="state">Bundeslandlabel>
             <input type="text" class="form-control" id="state" name="state" value="<?php echo htmlspecialchars($client['state']); ?>">
         </div>
         <div class="form-group">
-            <label for="country">Country:</label>
-            <input type="text" class="form-control" id="country" name="country" value="<?php echo htmlspecialchars($client['country']); ?>" required>
+            <label for="country">Land:</label>
+            <input type="text" class="form-control" id="country" name="country" value="<?php echo htmlspecialchars($client['country']); ?>" >
         </div>
 
         <!-- Contact Information -->
@@ -144,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($client['email']); ?>" required>
+            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($client['email']); ?>" >
         </div>
 
         <!-- Vehicle Details -->
@@ -177,6 +177,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </div>
 
 <?php
-$conn->close();
+
 include '../includes/footer.php';
 ?>
