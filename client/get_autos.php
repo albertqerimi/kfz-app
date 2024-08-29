@@ -10,7 +10,10 @@ if ($conn->connect_error) {
 }
 
 $client_id = isset($_GET['client_id']) ? intval($_GET['client_id']) : 0;
-
+if ($client_id <= 0) {
+    // Redirect to an error page or show an error message if no valid ID is present
+    die("<div class='container mt-4'><div class='alert alert-danger'>Invalid Auto ID. Please go back and try again.</div></div>");
+}
 if ($client_id > 0) {
     $autos_sql = "SELECT id, license_plate, model FROM autos WHERE client_id = ?";
     $stmt = $conn->prepare($autos_sql);
