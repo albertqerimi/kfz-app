@@ -8,6 +8,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+
 // Retrieve form data
 $name = $_POST['name'];
 $street = $_POST['street'];
@@ -23,11 +24,12 @@ $brand = $_POST['brand'];
 $model = $_POST['model'];
 $license_plate = $_POST['license_plate'];
 $tuv_date = $_POST['tuv_date'];
-
+$kundennummer =$_POST['kdnr'];
 // Insert client data into the database
-$sql = "INSERT INTO clients (name, street, house_number, postal_code, city, state, country, telephone, email, vin_number, brand, model, license_plate, tuv_date)
-VALUES ('$name', '$street', '$house_number', '$postal_code', '$city', '$state', '$country', '$telephone', '$email', '$vin_number', '$brand', '$model', '$license_plate', '$tuv_date')";
-
+$sql = "INSERT INTO clients (name, street, house_number, postal_code, city, state, country, phone, email, vin_number, model, brand, license_plate, tuv_date, kundennummer)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+   $stmt = $conn->prepare($sql);
+   $stmt->bind_param('sssssssssssssss', $name, $street, $house_number, $postal_code, $city, $state, $country, $telephone, $email, $vin_number, $model, $brand, $license_plate, $tuv_date, $kundennummer);
 if ($conn->query($sql) === TRUE) {
     echo "New client registered successfully";
     header('Location: ../index.php');
