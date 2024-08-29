@@ -1,3 +1,8 @@
-body{
-    min-height: 100%;
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+h2{
+    font-size: 2rem; color: #007bff; text-align: center; margin-bottom: 20px;
 }
