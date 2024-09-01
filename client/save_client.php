@@ -1,6 +1,5 @@
 <?php
 include '../config.php'; 
-
 $conn = new mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
 
 if ($conn->connect_error) {
@@ -17,16 +16,17 @@ $telephone = isset($_POST['telephone']) ? $_POST['telephone'] : '';
 $email = isset($_POST['email']) ? $_POST['email'] : '';
 $kundennummer = isset($_POST['kdnr']) ? $_POST['kdnr'] : '';
 
-$sql = "INSERT INTO clients (name, street, house_number, postal_code, city, country, phone, email, kundennummer)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$sql_client = "INSERT INTO clients (name, street, house_number, postal_code, city, country, phone, email, kundennummer)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-$stmt = $conn->prepare($sql);
+$stmt_client = $conn->prepare($sql_client);
 
-if ($stmt === false) {
+if ($stmt_client === false) {
     die("Prepare failed: " . $conn->error);
 }
 
-$stmt->bind_param('sssssssss', 
+// Bind parameters for client
+$stmt_client->bind_param('sssssssss', 
     $name, 
     $street, 
     $house_number, 
@@ -34,54 +34,63 @@ $stmt->bind_param('sssssssss',
     $city, 
     $country, 
     $telephone, 
-    $email, 
+    $email,
     $kundennummer
 );
 
-if ($stmt->execute()) {
-    // Get the inserted client ID
-    $client_id = $stmt->insert_id;
+if ($stmt_client->execute()) {
+    $client_id = $stmt_client->insert_id; 
+
 
     $vin_number = isset($_POST['vin_number']) ? $_POST['vin_number'] : '';
-    $make = isset($_POST['brand']) ? $_POST['brand'] : '';
+    $brand = isset($_POST['brand']) ? $_POST['brand'] : '';
     $model = isset($_POST['model']) ? $_POST['model'] : '';
     $license_plate = isset($_POST['license_plate']) ? $_POST['license_plate'] : '';
     $tuv_date = isset($_POST['tuv_date']) ? $_POST['tuv_date'] : '';
 
-    $sql_vehicle = "INSERT INTO vehicles (client_id, vin, brand, model, license_plate, tuv_date)
-                    VALUES (?, ?, ?, ?, ?, ?)";
+    if (!empty($vin_number) || !empty($brand) || !empty($model) || !empty($license_plate) || !empty($tuv_date)) {
+        // Only insert vehicle if at least one field is filled
+        $sql_vehicle = "INSERT INTO vehicles (client_id, vin, brand, model, license_plate, tuv_date)
+                        VALUES (?, ?, ?, ?, ?, ?)";
 
-    $stmt_vehicle = $conn->prepare($sql_vehicle);
+        $stmt_vehicle = $conn->prepare($sql_vehicle);
 
-    if ($stmt_vehicle === false) {
-        die("Prepare failed: " . $conn->error);
-    }
-    $stmt_vehicle->bind_param('isssss', 
-        $client_id, 
-        $vin_number, 
-        $brand, 
-        $model, 
-        $license_plate, 
-        $tuv_date
-    );
+        if ($stmt_vehicle === false) {
+            die("Prepare failed: " . $conn->error);
+        }
 
-    if ($stmt_vehicle->execute()) {
-        $success_message = "Kunde und Fahrzeug erfolgreich hinzugefügt.";
+        // Bind parameters for vehicle
+        $stmt_vehicle->bind_param('isssss', 
+            $client_id, 
+            $vin_number, 
+            $brand, 
+            $model, 
+            $license_plate, 
+            $tuv_date
+        );
+
+        if ($stmt_vehicle->execute()) {
+            $success_message = "Kunde und Fahrzeug erfolgreich hinzugefügt.";
+            header("Location: register_client.php?success=" . urlencode($success_message));
+            exit;
+        } else {
+            $error_message = "Fehler beim Hinzufügen des Fahrzeugs: " . $conn->error;
+            header("Location: register_client.php?error=" . urlencode($error_message));
+            exit;
+        }
+
+        $stmt_vehicle->close();
+    } else {
+        $success_message = "Kunde erfolgreich hinzugefügt.";
         header("Location: register_client.php?success=" . urlencode($success_message));
         exit;
-    } else {
-        $error_message = "Fehler beim Hinzufügen des Fahrzeugs: " . $conn->error;
-        header("Location: register_client.php?error=" . urlencode($error_message));
-        exit;
     }
-
-    $stmt_vehicle->close();
 } else {
     $error_message = "Fehler beim Hinzufügen des Kunden: " . $conn->error;
     header("Location: register_client.php?error=" . urlencode($error_message));
     exit;
 }
 
-$stmt->close();
+$stmt_client->close();
 $conn->close();
 ?>

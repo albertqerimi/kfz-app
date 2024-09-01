@@ -89,7 +89,7 @@ $kundennummer = generate_kundennummer($conn);
         <h4>Fahrzeugdetails</h4>
         <div class="form-group">
             <label for="vin_number">Fahrgestellnummer (VIN):</label>
-            <input type="text" class="form-control" id="vin_number" name="vin_number" required>
+            <input type="text" class="form-control" id="vin_number" name="vin_number">
         </div>
         <div class="form-group">
             <label for="brand">Marke:</label>
@@ -101,7 +101,7 @@ $kundennummer = generate_kundennummer($conn);
         </div>
         <div class="form-group">
             <label for="license_plate">Kennzeichen:</label>
-            <input type="text" class="form-control" id="license_plate" name="license_plate" required>
+            <input type="text" class="form-control" id="license_plate" name="license_plate">
         </div>
         <div class="form-group">
             <label for="tuv_date">TÜV Ablaufdatum:</label>
