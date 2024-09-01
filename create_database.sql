@@ -27,11 +27,11 @@ CREATE TABLE IF NOT EXISTS clients (
 CREATE TABLE IF NOT EXISTS vehicles (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     client_id INT(11) NOT NULL,
-    license_plate VARCHAR(50) NOT NULL,
+    license_plate VARCHAR(50) NOT NULL UNIQUE,
     make VARCHAR(50) NOT NULL,
     model VARCHAR(100) NOT NULL,
     year INT(11) NOT NULL,
-    vin VARCHAR(50) NOT NULL,
+    vin VARCHAR(50) NOT NULL UNIQUE,
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
 );
 
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS invoice_items (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     invoice_id INT(11) NOT NULL,
-    product_id INT(11),
+    product_id INT(11) NOT NULL,
     quantity INT(11) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
