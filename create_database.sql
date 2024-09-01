@@ -13,26 +13,27 @@ DROP TABLE IF EXISTS clients;
 CREATE TABLE IF NOT EXISTS clients (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    street VARCHAR(255) NOT NULL,
-    house_number VARCHAR(50) NOT NULL,
-    postal_code VARCHAR(20) NOT NULL,
-    city VARCHAR(255) NOT NULL,
-    country VARCHAR(255) NOT NULL,
+    street VARCHAR(255),
+    house_number VARCHAR(50),
+    postal_code VARCHAR(20),
+    city VARCHAR(255),
+    country VARCHAR(255),
     phone VARCHAR(20),
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
     kundennummer VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- Create vehicles table
 CREATE TABLE IF NOT EXISTS vehicles (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    client_id INT(11) NOT NULL,
+    client_id INT(11),
     license_plate VARCHAR(50) NOT NULL UNIQUE,
-    make VARCHAR(50) NOT NULL,
-    model VARCHAR(100) NOT NULL,
-    year INT(11) NOT NULL,
+    brand VARCHAR(50),
+    model VARCHAR(100),
+    year INT(11),
     vin VARCHAR(50) NOT NULL UNIQUE,
-    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    tuv_date DATE
 );
 
 -- Create invoices table
@@ -79,7 +80,7 @@ INSERT INTO clients (name, street, house_number, postal_code, city, country, pho
 ('Bob Brown', '135 Maple St', '40D', '45678', 'Eastwood', 'USA', '345-678-9012', 'bob.brown@example.com', 'KdNR00004'),
 ('Carol White', '246 Cedar St', '50E', '56789', 'Westfield', 'USA', '456-789-0123', 'carol.white@example.com', 'KdNR00005');
 
-INSERT INTO vehicles (client_id, license_plate, make, model, year, vin) VALUES
+INSERT INTO vehicles (client_id, license_plate, brand, model, year, vin) VALUES
 (1, 'ABC123', 'Toyota', 'Corolla', 2020, '1HGBH41JXMN109186'),
 (1, 'XYZ789', 'Honda', 'Civic', 2021, '2HGBH41JXMN109187');
 

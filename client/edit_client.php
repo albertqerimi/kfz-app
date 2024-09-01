@@ -13,7 +13,6 @@ if ($conn->connect_error) {
 // Get client ID from query parameters
 $client_id = isset($_GET['client_id']) ? intval($_GET['client_id']) : 0;
 
-
 // Fetch client data from the database
 $client_sql = "SELECT * FROM clients WHERE id = ?";
 $client_stmt = $conn->prepare($client_sql);
@@ -34,24 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $house_number = $_POST['house_number'];
     $postal_code = $_POST['postal_code'];
     $city = $_POST['city'];
-    $state = $_POST['state'];
     $country = $_POST['country'];
     $phone = $_POST['phone'];
     $email = $_POST['email'];
-    $vin_number = $_POST['vin_number'];
-    $brand = $_POST['brand'];
-    $model = $_POST['model'];
-    $license_plate = $_POST['license_plate'];
-    $tuv_date = $_POST['tuv_date'];
     $client_id = $_POST['client_id'];
 
-    // Validate client_id
-    if (!filter_var($client_id, FILTER_VALIDATE_INT)) {
-        die("<div class='container mt-4'><div class='alert alert-danger'>Invalid client ID. Please go back and try again.</div></div>");
-    }
 
     // Prepare the update statement
-    $update_sql = "UPDATE clients SET name = ?, street = ?, house_number = ?, postal_code = ?, city = ?, state = ?, country = ?, phone = ?, email = ?, vin_number = ?, brand = ?, model = ?, license_plate = ?, tuv_date = ? WHERE id = ?";
+    $update_sql = "UPDATE clients SET name = ?, street = ?, house_number = ?, postal_code = ?, city = ?, country = ?, phone = ?, email = ? WHERE id = ?";
     $update_stmt = $conn->prepare($update_sql);
 
     // Check for preparation errors
@@ -60,36 +49,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Bind parameters
-    $update_stmt->bind_param('ssssssssssssssi', 
+    $update_stmt->bind_param('ssssssssi', 
         $name, 
         $street, 
         $house_number, 
         $postal_code, 
         $city, 
-        $state, 
         $country, 
         $phone, 
         $email, 
-        $vin_number, 
-        $brand, 
-        $model, 
-        $license_plate, 
-        $tuv_date, 
         $client_id
     );
 
     // Execute the statement
     if ($update_stmt->execute()) {
-        echo "<div class='alert alert-success'>Kunde erfolgreich aktualisiert!</div>";
-    } else {
+       
+        header("Location: edit_client.php?client_id=" . urlencode($client_id) . "&success=" . urlencode("Kunde erfolgreich aktualisiert!"));
+        exit;
+    }else {
+    
         echo "<div class='alert alert-danger'>Fehler beim Aktualisieren des Kunden:" . $conn->error . "</div>";
     }
-
+   
     // Close statement and connection
     $update_stmt->close();
     $conn->close();
 }
-
+if (isset($_GET['success'])): ?>
+    <div class='alert alert-success'>
+        <?php echo htmlspecialchars($_GET['success']); ?>
+    </div>
+<?php endif;
 ?>
 
 <div class="container mt-4">
@@ -127,10 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="city">Stadt:</label>
             <input type="text" class="form-control" id="city" name="city" value="<?php echo htmlspecialchars($client['city']); ?>" >
         </div>
-        <div class="form-group">
-            <label for="state">Bundeslandlabel>
-            <input type="text" class="form-control" id="state" name="state" value="<?php echo htmlspecialchars($client['state']); ?>">
-        </div>
+       
         <div class="form-group">
             <label for="country">Land:</label>
             <input type="text" class="form-control" id="country" name="country" value="<?php echo htmlspecialchars($client['country']); ?>" >
@@ -147,28 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($client['email']); ?>" >
         </div>
 
-        <!-- Vehicle Details -->
-        <h4>Vehicle Details</h4>
-        <div class="form-group">
-            <label for="vin_number">VIN Number:</label>
-            <input type="text" class="form-control" id="vin_number" name="vin_number" value="<?php echo htmlspecialchars($client['vin_number']); ?>">
-        </div>
-        <div class="form-group">
-            <label for="brand">Brand:</label>
-            <input type="text" class="form-control" id="brand" name="brand" value="<?php echo htmlspecialchars($client['brand']); ?>">
-        </div>
-        <div class="form-group">
-            <label for="model">Model:</label>
-            <input type="text" class="form-control" id="model" name="model" value="<?php echo htmlspecialchars($client['model']); ?>">
-        </div>
-        <div class="form-group">
-            <label for="license_plate">License Plate:</label>
-            <input type="text" class="form-control" id="license_plate" name="license_plate" value="<?php echo htmlspecialchars($client['license_plate']); ?>">
-        </div>
-        <div class="form-group">
-            <label for="tuv_date">TÜV Ablaufdatum:</label>
-            <input type="date" class="form-control" id="tuv_date" name="tuv_date" value="<?php echo htmlspecialchars($client['tuv_date']); ?>">
-        </div>
 
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">Update Client</button>
