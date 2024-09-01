@@ -3,12 +3,13 @@ CREATE DATABASE IF NOT EXISTS kfz_db;
 USE kfz_db;
 
 -- Drop tables if they exist (for development purposes)
-DROP TABLE IF EXISTS clients;
-DROP TABLE IF EXISTS autos;
-DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS invoice_items;
+DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS vehicles;
+DROP TABLE IF EXISTS clients;
 
+-- Create clients table
 CREATE TABLE IF NOT EXISTS clients (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -16,21 +17,14 @@ CREATE TABLE IF NOT EXISTS clients (
     house_number VARCHAR(50) NOT NULL,
     postal_code VARCHAR(20) NOT NULL,
     city VARCHAR(255) NOT NULL,
-    state VARCHAR(255),
     country VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
     email VARCHAR(255) NOT NULL,
-    vin_number VARCHAR(50) NOT NULL,
-    brand VARCHAR(100) NOT NULL,
-    model VARCHAR(100) NOT NULL,
-    license_plate VARCHAR(20) NOT NULL,
-    tuv_date DATE NOT NULL,
     kundennummer VARCHAR(50) NOT NULL UNIQUE
 );
 
-
--- Create autos table
-CREATE TABLE autos (
+-- Create vehicles table
+CREATE TABLE IF NOT EXISTS vehicles (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     client_id INT(11) NOT NULL,
     license_plate VARCHAR(50) NOT NULL,
@@ -50,19 +44,22 @@ CREATE TABLE IF NOT EXISTS invoices (
     total DECIMAL(10,2) NOT NULL,
     discount DECIMAL(10,2),
     tax DECIMAL(10,2),
-    auto_id INT(11),
+    vehicle_id INT(11),
     total_amount DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (client_id) REFERENCES clients(id),
-    FOREIGN KEY (auto_id) REFERENCES autos(id)
-);
--- Create invoice_items table
-CREATE TABLE IF NOT EXISTS products (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    price DECIMAL(10,2) NOT NULL
+    currency VARCHAR(10) DEFAULT 'EUR', -- Added currency field
+    status ENUM('Paid', 'Unpaid', 'Cancelled') DEFAULT 'Unpaid', -- Added status field
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
 );
 
 -- Create products table
+CREATE TABLE IF NOT EXISTS products (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+
+);
+
+-- Create invoice_items table
 CREATE TABLE IF NOT EXISTS invoice_items (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     invoice_id INT(11) NOT NULL,
@@ -71,18 +68,18 @@ CREATE TABLE IF NOT EXISTS invoice_items (
     price DECIMAL(10,2) NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
+
 -- Insert sample data (Optional)
-INSERT INTO clients (name, street, house_number, postal_code, city, state, country, phone, email, vin_number, brand, model, license_plate, tuv_date, kundennummer) VALUES
-('John Doe', '123 Elm St', '10A', '12345', 'Springfield', 'IL', 'USA', '123-456-7890', 'john.doe@example.com', '1HGBH41JXMN109186', 'Toyota', 'Camry', 'XYZ123', '2025-05-20', 'KdNR00001'),
-('Jane Smith', '456 Oak St', '20B', '23456', 'Shelbyville', 'IL', 'USA', '098-765-4321', 'jane.smith@example.com', '2HGBH41JXMN109187', 'Honda', 'Civic', 'ABC456', '2026-06-15', 'KdNR00002'),
-('Alice Johnson', '789 Pine St', '30C', '34567', 'Capital City', 'IL', 'USA', '234-567-8901', 'alice.johnson@example.com', '3HGBH41JXMN109188', 'Ford', 'Focus', 'LMN789', '2027-07-10', 'KdNR00003'),
-('Bob Brown', '135 Maple St', '40D', '45678', 'Eastwood', 'IL', 'USA', '345-678-9012', 'bob.brown@example.com', '4HGBH41JXMN109189', 'Chevrolet', 'Malibu', 'OPQ012', '2028-08-25', 'KdNR00004'),
-('Carol White', '246 Cedar St', '50E', '56789', 'Westfield', 'IL', 'USA', '456-789-0123', 'carol.white@example.com', '5HGBH41JXMN109190', 'Nissan', 'Altima', 'RST345', '2029-09-30', 'KdNR00005');
+INSERT INTO clients (name, street, house_number, postal_code, city, country, phone, email, kundennummer) VALUES
+('John Doe', '123 Elm St', '10A', '12345', 'Springfield', 'USA', '123-456-7890', 'john.doe@example.com', 'KdNR00001'),
+('Jane Smith', '456 Oak St', '20B', '23456', 'Shelbyville', 'USA', '098-765-4321', 'jane.smith@example.com', 'KdNR00002'),
+('Alice Johnson', '789 Pine St', '30C', '34567', 'Capital City', 'USA', '234-567-8901', 'alice.johnson@example.com', 'KdNR00003'),
+('Bob Brown', '135 Maple St', '40D', '45678', 'Eastwood', 'USA', '345-678-9012', 'bob.brown@example.com', 'KdNR00004'),
+('Carol White', '246 Cedar St', '50E', '56789', 'Westfield', 'USA', '456-789-0123', 'carol.white@example.com', 'KdNR00005');
 
-
-INSERT INTO autos (client_id, license_plate, make, model, year, vin) VALUES
+INSERT INTO vehicles (client_id, license_plate, make, model, year, vin) VALUES
 (1, 'ABC123', 'Toyota', 'Corolla', 2020, '1HGBH41JXMN109186'),
 (1, 'XYZ789', 'Honda', 'Civic', 2021, '2HGBH41JXMN109187');
 
@@ -91,10 +88,9 @@ INSERT INTO products (name) VALUES
 ('Tire Rotation');
 
 -- Example of adding an invoice (just for demo purposes, ensure to adjust for your needs)
-INSERT INTO invoices (invoice_number, client_id, date, total, discount, tax, auto_id, total_amount) VALUES
+INSERT INTO invoices (invoice_number, client_id, date, total, discount, tax, vehicle_id, total_amount) VALUES
 ('000001', 1, NOW(), 100.00, 10.00, 17.10, 1, 107.10);
 
 INSERT INTO invoice_items (invoice_id, product_id, quantity, price, total_price) VALUES
 (1, 1, 1, 30.00, 30.00),
 (1, 2, 1, 70.00, 70.00);
-
