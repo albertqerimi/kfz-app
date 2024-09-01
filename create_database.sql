@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS invoices (
 -- Create products table
 CREATE TABLE IF NOT EXISTS products (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
-
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT
 );
 
 -- Create invoice_items table
