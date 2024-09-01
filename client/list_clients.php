@@ -52,11 +52,12 @@ $customer_result = $customer_stmt->get_result();
         <thead>
             <tr>
                 <th>Kundennummer</th>
-                <th>Client Name</th>
-                <th>Address</th>
-                <th>Email</th>
-                <th>Telephone</th>
-                <th>Actions</th>
+                <th>Kundenname</th>
+                <th>Adresse</th>
+                <th>E-Mail</th>
+                <th>Telefon</th>
+                <th width="260px">Aktionen</th>
+
             </tr>
         </thead>
         <tbody>
@@ -69,6 +70,7 @@ $customer_result = $customer_stmt->get_result();
                     <td><?php echo htmlspecialchars($customer['phone']); ?></td>
                     <td>
                         <a href="edit_client.php?client_id=<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-info btn-sm">Bearbeiten</a>
+                        <a href="../vehicles/list.php?client_id=<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-success btn-sm">Fahrzeuge anzeigen</a> 
                     </td>
                 </tr>
             <?php endwhile; ?>
