@@ -18,9 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $model = isset($_POST['model']) ? $_POST['model'] : '';
     $license_plate = isset($_POST['license_plate']) ? $_POST['license_plate'] : '';
     $tuv_date = isset($_POST['tuv_date']) ? $_POST['tuv_date'] : '';
+    $year = isset($_POST['year']) ? $_POST['year'] : '';
     $client_id = isset($_POST['client_id']) ? $_POST['client_id'] : ''; // Assuming you have a client ID
 
-
+    
+    if (empty($vin_number) && empty($brand) && empty($model) && empty($license_plate) && empty($tuv_date)) {
+        echo "<div class='alert alert-warning'>Keine Daten zum Hinzufügen vorhanden.</div>";
+        exit;
+    }
     
     // Check for duplicate VIN
     $check_vin_sql = "SELECT COUNT(*) FROM vehicles WHERE vin = ?";
@@ -54,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
     // Prepare SQL statement
-    $sql = "INSERT INTO vehicles (client_id, vin, brand, model, license_plate, tuv_date) 
-            VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO vehicles (client_id, vin, brand, model,year, license_plate, tuv_date) 
+            VALUES (?, ?, ?, ?, ?,?, ?)";
 
     $stmt = $conn->prepare($sql);
 
@@ -64,11 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Bind parameters
-    $stmt->bind_param('isssss', 
+    $stmt->bind_param('issssss', 
         $client_id, 
         $vin_number, 
         $brand, 
         $model, 
+        $year,
         $license_plate, 
         $tuv_date
     );

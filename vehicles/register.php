@@ -10,50 +10,45 @@ if ($conn->connect_error) {
     die("<div class='container mt-4'><div class='alert alert-danger'>Verbindung zur Datenbank fehlgeschlagen: " . $conn->connect_error . "</div></div>");
 }
 
-// Get search term if any
-$search = isset($_GET['search']) ? $_GET['search'] : '';
+$client_id = isset($_GET['client_id']) ? intval($_GET['client_id']) : 0;
 
-// Prepare SQL statement to fetch clients with search functionality
-$client_sql = "SELECT id, name FROM clients WHERE name LIKE ? LIMIT 50";
+// Fetch client name
+$client_sql = "SELECT name FROM clients WHERE id = ?";
 $stmt = $conn->prepare($client_sql);
-$search_param = "%$search%";
-$stmt->bind_param('s', $search_param);
+$stmt->bind_param("i", $client_id);
 $stmt->execute();
 $client_result = $stmt->get_result();
 
-// Fetch clients
-$clients = [];
+
+if($client_result->num_rows <= 0){
+   
+    die("<div class='container mt-4'><div class='alert alert-danger'>Ungültige Client-ID</div></div>");
+}
+
+// Fetch the client's name
+$client_name = "";
+
+
 if ($client_result->num_rows > 0) {
-    while ($row = $client_result->fetch_assoc()) {
-        $clients[] = $row;
-    }
+ 
+    $client_row = $client_result->fetch_assoc();
+
+    $client_name = htmlspecialchars($client_row['name']);
+  
 }
 
 ?>
 
 <div class="container mt-4">
     <h2>Fahrzeug registrieren</h2>
-    
-    <!-- Search Form -->
-    <form method="get" class="mb-4">
-        <div class="form-group">
-            <label for="search">Suche nach Kunde:</label>
-            <input type="text" class="form-control" id="search" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Geben Sie einen Namen ein...">
-        </div>
-        <button type="submit" class="btn btn-primary">Suchen</button>
-    </form>
 
     <!-- Registration Form -->
     <form action="save.php" method="post">
         <div class="form-group">
             <label for="client_id">Kunde:</label>
             <select class="form-control" id="client_id" name="client_id" required>
-                <option value="">Bitte wählen...</option>
-                <?php foreach ($clients as $client): ?>
-                    <option value="<?php echo htmlspecialchars($client['id']); ?>">
-                        <?php echo htmlspecialchars($client['name']); ?>
-                    </option>
-                <?php endforeach; ?>
+                <option value="<?php echo $client_id ?>"><?php echo $client_name ?></option>
+
             </select>
         </div>
         <div class="form-group">
@@ -69,6 +64,10 @@ if ($client_result->num_rows > 0) {
             <input type="text" class="form-control" id="model" name="model" required>
         </div>
         <div class="form-group">
+            <label for="year">Year:</label>
+            <input type="text" class="form-control" id="year" name="year" required>
+        </div>
+        <div class="form-group">
             <label for="license_plate">Kennzeichen:</label>
             <input type="text" class="form-control" id="license_plate" name="license_plate" required>
         </div>
@@ -77,7 +76,7 @@ if ($client_result->num_rows > 0) {
             <input type="date" class="form-control" id="tuv_date" name="tuv_date">
         </div>
         <button type="submit" class="btn btn-primary">Fahrzeug registrieren</button>
-        <a href="list_autos.php" class="btn btn-secondary">Abbrechen</a>
+        <a href="list.php?client_id=<?php echo $client_id; ?>" class="btn btn-secondary">Abbrechen</a>
     </form>
 </div>
 

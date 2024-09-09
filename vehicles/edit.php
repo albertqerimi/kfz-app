@@ -40,11 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $model = $_POST['model'];
     $year = $_POST['year'];
     $license_plate = $_POST['license_plate'];
+    $tuv = $_POST['tuv_date'];
 
     // Update the auto in the database
-    $update_sql = "UPDATE vehicles SET vin = ?, brand = ?, model = ?, year = ?, license_plate = ? WHERE id = ?";
+    $update_sql = "UPDATE vehicles SET vin = ?, brand = ?, model = ?, year = ?, license_plate = ?,tuv_date = ? WHERE id = ?";
     $update_stmt = $conn->prepare($update_sql);
-    $update_stmt->bind_param('sssssi', $vin, $brand, $model, $year, $license_plate, $auto_id);
+    $update_stmt->bind_param('ssssssi', $vin, $brand, $model, $year, $license_plate,$tuv, $auto_id);
 
     if ($update_stmt->execute()) {
         header("Location: edit.php?id=" . urlencode($auto_id) . "&success=true");
@@ -79,8 +80,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="license_plate">Kennzeichen:</label>
             <input type="text" class="form-control" id="license_plate" name="license_plate" value="<?php echo htmlspecialchars($auto['license_plate']); ?>" required>
         </div>
+        <div class="form-group">
+            <label for="tuv_date">TÜV Ablaufdatum:</label>
+            <input type="date" class="form-control" id="tuv_date" name="tuv_date">
+        </div>
         <button type="submit" class="btn btn-primary">Änderungen speichern</button>
-        <a href="../client/list_clients.php" class="btn btn-secondary">Abbrechen</a>
+        <a href="../vehicles/list.php?client_id=<?php echo htmlspecialchars($auto['client_id']); ?>" class="btn btn-secondary">Zurück</a>
     </form>
 </div>
 
