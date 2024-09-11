@@ -1,7 +1,7 @@
 <?php
 include '../config.php';
 
-$product_sql = "SELECT name FROM products";
+$product_sql = "SELECT id, name, description FROM products";
 $result = $conn->query($product_sql);
 
 $products = [];
