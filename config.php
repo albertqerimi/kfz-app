@@ -5,6 +5,7 @@ define('DB_USER', 'root');        // or your database username
 define('DB_PASSWORD', '');        // or your database password
 define('DB_DATABASE', 'kfz_db');  // or your database name
 
+define('LOGO_PATH', '../assets/images/mentor-logo.jpg');
 
 
 
