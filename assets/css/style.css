@@ -10,3 +10,48 @@ h2{
 main{
     min-height: calc(100vh - 181px);
 }
+
+
+.ui-menu {
+  list-style: none;
+  padding:0;
+  background-color: #ccc;
+  z-index: 111;
+
+  max-width: 600px !important;
+}
+.ui-menu li{
+  padding:10px;
+ 
+}
+
+.row-header {
+    font-weight: bold;
+}
+.remove-product {
+    cursor: pointer;
+}
+
+.product-row{
+    position: relative;
+}
+.product-row .index{
+    position: absolute;
+    top:5px;
+}
+
+.footer-row {
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+.footer-label {
+    font-weight: bold;
+}
+.footer-amount {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.footer-section {
+    margin-top: 20px;
+}
