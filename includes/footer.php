@@ -1,7 +1,7 @@
 </main> <!-- Close container div from header.php -->
     <footer class="footer mt-auto py-3 bg-light">
         <div class="container text-center">
-            <span class="text-muted">&copy; <?php echo date("Y"); ?> Mentor KFZ. All rights reserved.</span>
+            <span class="text-muted">&copy; <?php echo date("Y"); ?> Mentor KFZ. Alle Rechte vorbehalten.</span>
         </div>
     </footer>
 

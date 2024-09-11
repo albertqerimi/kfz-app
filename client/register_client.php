@@ -12,7 +12,7 @@ if ($conn->connect_error) {
 
 function generate_kundennummer($conn) {
     do {
-        $kundennummer = 'KdNR-' . strtoupper(bin2hex(random_bytes(4)));
+        $kundennummer = strtoupper(bin2hex(random_bytes(4)));
         $check_sql = "SELECT COUNT(*) FROM clients WHERE kundennummer = ?";
         $check_stmt = $conn->prepare($check_sql);
         $check_stmt->bind_param('s', $kundennummer);
@@ -70,9 +70,29 @@ $kundennummer = generate_kundennummer($conn);
         </div>
 
         <div class="form-group">
-            <label for="country">Land:</label>
-            <input type="text" class="form-control" id="country" name="country">
-        </div>
+        <label for="country">Land:</label>
+        <select class="form-control" id="country" name="country">
+        <option value="Deutschland">Deutschland </option>
+        <option value="Österreich">Österreich</option>
+        <option value="Frankreich">Frankreich</option>
+        <option value="Italien">Italien </option>
+        <option value="Spanien">Spanien</option>
+        <option value="Niederlande">Niederlande</option>
+        <option value="Belgien">Belgien</option>
+        <option value="Schweiz">Schweiz </option>
+        <option value="Schweden">Schweden </option>
+        <option value="Norwegen">Norwegen </option>
+        <option value="Dänemark">Dänemark </option>
+        <option value="Finnland">Finnland </option>
+        <option value="Irland">Irland </option>
+        <option value="Polen">Polen </option>
+        <option value="Tschechien">Tschechien </option>
+        <option value="Ungarn">Ungarn </option>
+
+            <!-- Add more countries as needed -->
+        </select>
+    </div>
+
 
         <!-- Contact Information -->
         <h4>Kontaktinformation</h4>
