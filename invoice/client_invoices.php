@@ -30,7 +30,7 @@ if (!$client) {
 }
 
 // Fetch autos for the client
-$autos_sql = "SELECT id, license_plate, model, year FROM autos WHERE client_id = ?";
+$autos_sql = "SELECT id, license_plate, model, year FROM vehicles WHERE client_id = ?";
 $stmt = $conn->prepare($autos_sql);
 $stmt->bind_param("i", $client_id);
 $stmt->execute();

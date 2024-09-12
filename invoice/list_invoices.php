@@ -120,6 +120,15 @@ $conn->close();
         <button type="submit" class="btn btn-primary">Suche</button>
         <a href="list_invoices.php" class="ml-2 btn btn-secondary">Suche löschen</a>
     </form>
+    <form action="download_invoices.php" method="GET" class="form-inline d-none">
+        <!-- Include any search/filter inputs you already have -->
+        <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+        <input type="hidden" name="filter_date_from" value="<?php echo htmlspecialchars($filter_date_from); ?>">
+        <input type="hidden" name="filter_date_to" value="<?php echo htmlspecialchars($filter_date_to); ?>">
+        
+        <button type="submit" class="btn btn-primary">Download All Filtered Invoices (ZIP)</button>
+    </form>
+
 
 
     <!-- Invoices Table -->
@@ -146,8 +155,9 @@ $conn->close();
                         <td><?php echo htmlspecialchars($invoice['vehicle_model']) ?: 'Bar Verkauf'; ?></td>
                         <td><?php echo htmlspecialchars($invoice['total_amount']); ?></td>
                         <td>
-                            <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>" class="btn btn-info btn-sm">Anzeigen</a>
-                            <a href="edit_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>" class="btn btn-warning btn-sm">Bearbeiten</a>
+<a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>&action=view" target="_blank" class="btn btn-info btn-sm">Anzeigen</a>
+    <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>&action=download" class="btn btn-success btn-sm">Download</a>
+                        <a href="edit_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>" class="btn btn-warning btn-sm">Bearbeiten</a>
                         </td>
                     </tr>
                 <?php endwhile;
