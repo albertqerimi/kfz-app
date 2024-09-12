@@ -15,5 +15,5 @@ $up=-63;
 $ut=44;
 $ttffile='C:\xampp\htdocs\kfz-app\fpdf/font/unifont/DejaVuSansMono.ttf';
 $originalsize=340712;
-$fontkey='dejavusans';
+$fontkey='dejavusansmono';
 ?>
