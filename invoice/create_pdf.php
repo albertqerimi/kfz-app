@@ -2,10 +2,12 @@
 require('../fpdf/tfpdf.php'); // Ensure the path is correct
 
 include '../config.php'; // Ensure this includes your database connection settings
+include_once '../phpqrcode/qrlib.php';
 
 // Create a new database connection
 $conn = new mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
 define('COL_PRODUCT_WIDTH', 100);
+define('COL_POS_WIDTH', 20);
 define('COL_QUANTITY_WIDTH', 30);
 define('COL_PRICE_WIDTH', 30);
 define('COL_TOTAL_WIDTH', 30);
@@ -15,35 +17,30 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 class myPDF extends TFPDF {
-  
+    // Declare a variable to store the alias for total pages
+    private $totalPagesAlias = '{nb}';
+    public function getAvailableSpace() {
+        return $this->GetPageHeight() - $this->GetY() - $this->getBottomMargin();
+    }
+    public function getBottomMargin() {
+        return $this->bMargin;
+    }
+
+    public function setBottomMargin($margin) {
+        $this->bMargin = $margin;
+    }
+
     // Page header
     function Header() {
-          
-        // // Set font family to Arial bold 
-        // $this->SetFont('Times','B',14);
-          
-        // // Move to the right
-        // $this->Cell(276,5, 'HOW TO GENERATE PDF USING FPDF');
-
-        // //Sets the text color
-        // $this->SetTextColor(0,0,255);
-
-        // //Line break
-        // $this->Ln(20);
-          
-        // // Header
-        // $this->Cell(200,10,'FPDF DOCUMENTATION',0,0,'C');
-          
-        // // Line break
-        // $this->Ln(20);
+        // Your header code here
     }
-  
+
     // Page footer
     function Footer() {
-          
-        // Position at 1.5 cm from bottom
-        $this->SetY(-25);
+        // Ensure footer content is correctly placed
+        $this->SetY(-25); // Position at the bottom
         $this->SetFont('DejaVuSansMono', '', 8);
+
         // Define column widths and spacing
         $colWidth = 60; // Width of each column
         $lineHeight = 5; // Line height
@@ -67,29 +64,44 @@ class myPDF extends TFPDF {
         $col2Text = isset($columns[1]) ? $columns[1] : '';
         $col3Text = isset($columns[2]) ? $columns[2] : '';
 
+        // Display current page number and total pages
+        $this->SetY(-15); // Position higher up for the page number
+        $this->Cell(0, 10, 'Page ' . $this->PageNo() . ' of ' . $this->PageNo(), 0, 0, 'C');
+
+        // Print the footer content for the last page
+        if (!$this->PageNo() == $this->totalPagesAlias) {
+            return;
+        }
+
         // Set Y position and add columns
+        $this->SetY($startY); // Reset Y to initial position
         $this->SetXY($startX, $startY);
         $this->MultiCell($colWidth, $lineHeight, $col1Text, 0, 'L');
 
         $this->SetXY($startX + $colWidth + $spacing, $startY);
         $this->MultiCell($colWidth, $lineHeight, $col2Text, 0, 'L');
 
-
         $this->SetXY($startX + 2 * ($colWidth + $spacing), $startY);
         $this->MultiCell($colWidth, $lineHeight, $col3Text, 0, 'L');
-          
-       
     }
-    // header Attributes
-    function headerAttributes() {
-        $this->SetFont('Times','B', 10);
-        $this->Cell(30,10,'Attributes',1,0,'C');
-        $this->Cell(45,10,'Description',1,0,'C');
-        $this->Cell(60,10,'How to Use',1,0,'C');
-        $this->Cell(40,10,'Tutorials',1,0,'C');
+
+    // Override the AddPage method to include the $rotation parameter
+    function AddPage($orientation = '', $size = '', $rotation = 0) {
+        parent::AddPage($orientation, $size, $rotation);
+        // Set alias for total pages
+        $this->totalPagesAlias = $this->AliasNbPages();
+    }
+
+    function Close() {
+        // Set the total pages alias for final replacement
+        $this->totalPagesAlias = $this->PageNo();
+        parent::Close();
     }
 }
-  
+
+
+
+
 // Instantiation of FPDF class
 $pdf = new myPDF();
   
@@ -97,9 +109,6 @@ $pdf = new myPDF();
 $pdf->AliasNbPages();
 $pdf->AddPage();
 #$pdf->headerAttributes();
-
-  
-
 
 // Start output buffering
 ob_start();
@@ -121,6 +130,39 @@ if (!$invoice_result || $invoice_result->num_rows == 0) {
     exit;
 }
 $invoice = $invoice_result->fetch_assoc();
+
+$iban        = IBAN;
+$bic         = BIC;
+$recipient   = KONTOINHABER;
+$currency    = "EUR";
+$amount      = number_format($invoice['total_amount'], 2, '.', ''); //number_format(99.99, 2, '.', ''); // Format amount with period
+$subject     = $invoice_id;
+
+// QR Code Daten (Zeilenumbruch beachten)
+$data = "BCD\n" // QR Code Version
+      . "001\n" // Profile ID
+      . "1\n"   // Character Encoding
+      . "SCT\n" // SEPA Credit Transfer
+      . "{$bic}\n"
+      . "{$recipient}\n"
+      . "{$iban}\n"
+      . "{$currency}{$amount}\n" // Amount with currency
+      . "\n" // Blank line for optional fields
+      . "{$subject}\n" // Payment reference
+      . "\n";// Blank line for optional fields
+      #. "{$comment}"; // Comment
+
+// Debugging: Output QR code data
+#echo "<pre>";
+#echo htmlspecialchars($data);
+#echo "</pre>";
+
+// Dateiname und Pfad (gleiche Verzeichnis wie das Skript)
+$tempDir = __DIR__ . '/';
+$filename = "SEPA_" . time() . ".png";
+
+// QR Code generieren
+QRcode::png($data, $tempDir . $filename, QR_ECLEVEL_M, 4, 2);
 
 // Fetch client details
 $client_sql = "SELECT * FROM clients WHERE id = " . $invoice['client_id'];
@@ -164,7 +206,26 @@ $dateOnly = isset($invoice['date']) ? date('d.m.Y', strtotime($invoice['date']))
 $pdf->Cell(0, 5, 'Datum: ' . htmlspecialchars($dateOnly), 0, 1, 'R');
 $pdf->Cell(0, 5, 'Ihre Kundennummer: ' . htmlspecialchars($client['kundennummer'] ?? 'N/A'), 0, 1, 'R');
 $pdf->Cell(0, 5, 'Zahlungsziel: ' . htmlspecialchars($invoice['payment_terms'] ?? 'N/A'), 0, 1, 'R');
+// Page width and image width
+$pageWidth = $pdf->GetPageWidth();
+$imageWidth = 20; // Width of the image
+$imageHeight = 20; // Height of the image
+
+// Calculate the X position for right alignment
+$xPosition = $pageWidth - $imageWidth - 10; // 10 units from the right edge, adjust as needed
+
+// Y position for text
+$textYPosition = $pdf->GetY();
+$pdf->SetXY(10, $textYPosition); // Set X position to the left margin and the current Y position
 $pdf->Cell(0, 5, 'Zahlungsform: ' . htmlspecialchars($invoice['payment_method'] ?? 'N/A'), 0, 1, 'R');
+
+// Y position for image: just below the text
+$imageYPosition = $textYPosition + 5 + 5; // Add text height (5) and some spacing (5) to get below the text
+$pdf->SetXY($xPosition, $imageYPosition); // Set X position for image and Y position just below the text
+
+// Add the image
+$pdf->Image($tempDir . $filename, $xPosition, $imageYPosition, $imageWidth, $imageHeight, '', '', '', true, 300, '', '', '', '', 'R');
+
 
 // Client Info
 $pdf->SetXY(10, 38);
@@ -172,34 +233,56 @@ $pdf->Cell(0, 5, htmlspecialchars($client['name'] ?? 'N/A'), 0, 1);
 $pdf->Cell(0, 5, htmlspecialchars($client['street'] ?? '') . ' ' . htmlspecialchars($client['house_number'] ?? ''), 0, 1);
 $pdf->Cell(0, 5, htmlspecialchars($client['postal_code'] ?? '') . ' ' . htmlspecialchars($client['city'] ?? ''), 0, 1);
 $pdf->Cell(0, 5, htmlspecialchars($client['country'] ?? 'N/A'), 0, 1);
-$pdf->Ln(10);
+$pdf->Ln(40);
+// Define column widths
+// Define column widths
+$colWidths = [
+    'POS' => 10,
+    'Produkt' => COL_PRODUCT_WIDTH,
+    'Menge' => COL_QUANTITY_WIDTH,
+    'Preis' => COL_PRICE_WIDTH,
+    'Total' => COL_TOTAL_WIDTH,
+];
 
-// Products Table Header
-$pdf->SetFont('DejaVuSansCondensed', '', 10);
-$pdf->SetFillColor(220, 220, 220); // Light gray background for header
-$pdf->Cell(COL_PRODUCT_WIDTH, 10, 'Produkt', 1, 0, 'C', true);
-$pdf->Cell(COL_QUANTITY_WIDTH, 10, 'Menge', 1, 0, 'C', true);
-$pdf->Cell(COL_PRICE_WIDTH, 10, 'Einzelpreis (€)', 1, 0, 'C', true);
-$pdf->Cell(COL_TOTAL_WIDTH, 10, 'Gesamt (€)', 1, 1, 'C', true);
+// Print header cells with left alignment and no background color
+$pdf->Cell($colWidths['POS'], 10, 'POS', 0, 0, 'L');
+$pdf->Cell($colWidths['Produkt'], 10, 'Produkt', 0, 0, 'L');
+$pdf->Cell($colWidths['Menge'], 10, 'Menge', 0, 0, 'L');
+$pdf->Cell($colWidths['Preis'], 10, 'Preis', 0, 0, 'L');
+$pdf->Cell($colWidths['Total'], 10, 'Total', 0, 1, 'L');
 
-// Products Table Rows
-$pdf->SetFont('DejaVuSansCondensed', '', 10);
-$fill = false; // Start with white background
+// Save the current X and Y positions for drawing the border
+$x = $pdf->GetX(); // X position after header cells
+$y = $pdf->GetY(); // Y position after header cells
 
-function getTextHeight($pdf, $text, $width, $fontSize) {
-    $pdf->SetFont('DejaVuSansCondensed', '', $fontSize);
-    $textHeight = 0;
-    $lines = explode("\n", $text);
-    foreach ($lines as $line) {
-        $textHeight += $pdf->GetStringWidth($line) / $width * $fontSize * 1.2;
-    }
-    return $textHeight;
-}
+// Calculate total width of columns
+$totalWidth = array_sum($colWidths);
 
+// Adjust the width for the line to end 30 units before the edge
+$lineWidth = $totalWidth - 15;
+
+// Draw a bottom border below the header spanning the adjusted width of columns
+$pdf->SetXY(10, $y); // Move to the start of the row
+$pdf->Cell($lineWidth, 0, '', 'T'); // Draw the horizontal line with top border
+
+// Reset Y position after header
+$startY = $pdf->GetY();
+$pdf->SetY($startY);
+
+// Initialize position counter
+$counter = 1;
+
+// Print items
 while ($item = $items_result->fetch_assoc()) {
     // Save the current X and Y positions
     $x = $pdf->GetX();
     $y = $pdf->GetY();
+
+    // Set font and color for position number
+    $pdf->SetTextColor(0, 0, 0); // Black color
+
+    // Write position number
+    $pdf->Cell($colWidths['POS'], ROW_HEIGHT, $counter, 0, 0, 'L');
 
     // Set font and color for product_name
     $pdf->SetFont('DejaVuSansCondensed', '', 12); // Font size for product_name
@@ -207,38 +290,44 @@ while ($item = $items_result->fetch_assoc()) {
 
     // Write product_name
     $product_name = htmlspecialchars($item['product_name'] ?? 'N/A');
-    $pdf->MultiCell(COL_PRODUCT_WIDTH, 10, $product_name, 0, 'L', false);
+    $pdf->Cell($colWidths['Produkt'], ROW_HEIGHT, $product_name, 0, 'L', false);
 
-    // Adjust the position for product_description to be closer to product_name
-    $currentY = $pdf->GetY();
-    $pdf->SetY($currentY - 5); // Move up by 5 units (adjust as needed)
+    // Calculate the height of the product name cell
+    $productNameHeight = $pdf->GetY() - $y;
 
     // Set font and color for product_description
     $pdf->SetFont('DejaVuSans', '', 10); // Font for description
     $pdf->SetTextColor(128, 128, 128); // Grey color
 
     // Write product_description
+    $pdf->SetXY($pdf->GetX(), $y + $productNameHeight - 5); // Adjust vertical position to move description up
     $product_description = htmlspecialchars($item['product_description'] ?? '');
-    $pdf->MultiCell(COL_PRODUCT_WIDTH, 10, $product_description, 0, 'L', false);
-    $pdf->SetTextColor(0, 0, 0); // Grey color
+    $pdf->MultiCell($colWidths['Produkt'], ROW_HEIGHT, $product_description, 0, 'L', false);
+
+    $pdf->SetTextColor(0, 0, 0); // Reset color
+
+    // Calculate the height of the description cell
+    $descriptionHeight = $pdf->GetY() - ($y + $productNameHeight);
+
     // Calculate the height of the row
-    $row_height = $pdf->GetY() - $y;
+    $row_height = max($productNameHeight, $descriptionHeight);
 
-    // Draw border around the combined area
-    $pdf->Rect($x, $y, COL_PRODUCT_WIDTH, $row_height, 'D'); // 'D' for border only
+    // Check if there is enough space left on the page
+    if ($row_height > $pdf->getAvailableSpace()) {
+        $pdf->AddPage(); // Add a new page
+        $pdf->SetXY($x, $pdf->GetY()); // Reset X and Y position to start of new page
+    } else {
+        // Move to the next row and adjust X position
+        $pdf->SetXY($x + $colWidths['Produkt'], $y);
+    }
 
-    // Move to the next row and adjust X position
-    $pdf->SetXY($x + COL_PRODUCT_WIDTH, $y);
+    // Print quantity, price, and total cells
+    $pdf->Cell($colWidths['Menge'], $row_height, htmlspecialchars($item['quantity'] ?? '0'), 0, 0, 'C');
+    $pdf->Cell($colWidths['Preis'], $row_height, htmlspecialchars(number_format($item['price'] ?? 0, 2)), 0, 0, 'C');
+    $pdf->Cell($colWidths['Total'], $row_height, htmlspecialchars(number_format($item['total_price'] ?? 0, 2)), 0, 1, 'C');
 
-    // Draw borders for quantity, price, and total cells with the same row height
-    $pdf->Cell(COL_QUANTITY_WIDTH, $row_height, htmlspecialchars($item['quantity'] ?? '0'), 0, 0, 'C', $fill);
-    $pdf->Cell(COL_PRICE_WIDTH, $row_height, htmlspecialchars(number_format($item['price'] ?? 0, 2)), 0, 0, 'C', $fill);
-    $pdf->Cell(COL_TOTAL_WIDTH, $row_height, htmlspecialchars(number_format($item['total_price'] ?? 0, 2)), 0, 1, 'C', $fill);
-
-    // Draw borders around the quantity, price, and total cells
-    $pdf->Rect($x + COL_PRODUCT_WIDTH, $y, COL_QUANTITY_WIDTH, $row_height, 'D');
-    $pdf->Rect($x + COL_PRODUCT_WIDTH + COL_QUANTITY_WIDTH, $y, COL_PRICE_WIDTH, $row_height, 'D');
-    $pdf->Rect($x + COL_PRODUCT_WIDTH + COL_QUANTITY_WIDTH + COL_PRICE_WIDTH, $y, COL_TOTAL_WIDTH, $row_height, 'D');
+    // Increment position number
+    $counter++;
 }
 
 
@@ -250,7 +339,7 @@ $pdf->SetFont('DejaVuSans', '', 12);
 $pdf->SetFillColor(78, 140, 255); // Light gray background for totals
 $pdf->Cell(160, 10, 'NETTOBETRAG:', 0, 0, 'R', true);
 $pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['total'] ?? 0, 2)) . ' €', 0, 1, 'R', true);
-$pdf->Cell(160, 10, 'Rabatt:', 0, 0, 'R', true);
+
 if (isset($invoice['discount']) && $invoice['discount'] > 0) {
     // Show the Rabatt (discount) row
     $pdf->Cell(157, 5, 'Rabatt:', 0, 0, 'R', true);
@@ -280,4 +369,6 @@ if ($action === 'download') {
 
 // End output buffering
 ob_end_flush();
+unlink($tempDir . $filename);
+
 ?>
