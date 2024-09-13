@@ -3,103 +3,14 @@ require('../fpdf/tfpdf.php'); // Ensure the path is correct
 
 include '../config.php'; // Ensure this includes your database connection settings
 include_once '../phpqrcode/qrlib.php';
-
+include_once 'myPDF.php';
 // Create a new database connection
 $conn = new mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
-define('COL_PRODUCT_WIDTH', 100);
-define('COL_POS_WIDTH', 20);
-define('COL_QUANTITY_WIDTH', 30);
-define('COL_PRICE_WIDTH', 30);
-define('COL_TOTAL_WIDTH', 30);
-define('ROW_HEIGHT', 10);
+
 // Check the connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-class myPDF extends TFPDF {
-    // Declare a variable to store the alias for total pages
-    private $totalPagesAlias = '{nb}';
-    public function getAvailableSpace() {
-        return $this->GetPageHeight() - $this->GetY() - $this->getBottomMargin();
-    }
-    public function getBottomMargin() {
-        return $this->bMargin;
-    }
-
-    public function setBottomMargin($margin) {
-        $this->bMargin = $margin;
-    }
-
-    // Page header
-    function Header() {
-        // Your header code here
-    }
-
-    // Page footer
-    function Footer() {
-        // Ensure footer content is correctly placed
-        $this->SetY(-25); // Position at the bottom
-        $this->SetFont('DejaVuSansMono', '', 8);
-
-        // Define column widths and spacing
-        $colWidth = 60; // Width of each column
-        $lineHeight = 5; // Line height
-        $spacing = 5; // Space between columns
-        $startX = 10; // Starting X position
-        $startY = $this->GetY(); // Starting Y position
-
-        // Text content with a custom delimiter (|) to separate columns
-        $text = "Mentor Kfz Handel & Service, Mannheimer Straße 8, 67105 Schifferstadt, Deutschland\nUSt-IdNr.: DE368172797|Handy:015788443090 E-Mail: mentorkfz@web.de|Zahlungsempfänger: Mentor Sejdiu Bankname: Sparkasse Vorderpfalz\nIBAN: DE45 5455 0010 0194 2195 80 SWIFT/BIC: LUHSDE6AXXX";
-
-        // Split the text into columns using the delimiter
-        $columns = explode('|', $text);
-
-        // Ensure we have three columns or adjust accordingly
-        if (count($columns) < 3) {
-            $columns = array_pad($columns, 3, ''); // Pad with empty strings if fewer columns
-        }
-
-        // Extract text for each column
-        $col1Text = isset($columns[0]) ? $columns[0] : '';
-        $col2Text = isset($columns[1]) ? $columns[1] : '';
-        $col3Text = isset($columns[2]) ? $columns[2] : '';
-
-        // Display current page number and total pages
-        $this->SetY(-15); // Position higher up for the page number
-        $this->Cell(0, 10, 'Page ' . $this->PageNo() . ' of ' . $this->PageNo(), 0, 0, 'C');
-
-        // Print the footer content for the last page
-        if (!$this->PageNo() == $this->totalPagesAlias) {
-            return;
-        }
-
-        // Set Y position and add columns
-        $this->SetY($startY); // Reset Y to initial position
-        $this->SetXY($startX, $startY);
-        $this->MultiCell($colWidth, $lineHeight, $col1Text, 0, 'L');
-
-        $this->SetXY($startX + $colWidth + $spacing, $startY);
-        $this->MultiCell($colWidth, $lineHeight, $col2Text, 0, 'L');
-
-        $this->SetXY($startX + 2 * ($colWidth + $spacing), $startY);
-        $this->MultiCell($colWidth, $lineHeight, $col3Text, 0, 'L');
-    }
-
-    // Override the AddPage method to include the $rotation parameter
-    function AddPage($orientation = '', $size = '', $rotation = 0) {
-        parent::AddPage($orientation, $size, $rotation);
-        // Set alias for total pages
-        $this->totalPagesAlias = $this->AliasNbPages();
-    }
-
-    function Close() {
-        // Set the total pages alias for final replacement
-        $this->totalPagesAlias = $this->PageNo();
-        parent::Close();
-    }
-}
-
-
 
 
 // Instantiation of FPDF class
@@ -131,38 +42,40 @@ if (!$invoice_result || $invoice_result->num_rows == 0) {
 }
 $invoice = $invoice_result->fetch_assoc();
 
-$iban        = IBAN;
-$bic         = BIC;
-$recipient   = KONTOINHABER;
-$currency    = "EUR";
-$amount      = number_format($invoice['total_amount'], 2, '.', ''); //number_format(99.99, 2, '.', ''); // Format amount with period
-$subject     = $invoice_id;
+if($invoice['payment_form'] == 'Rechnung'){
+    $iban        = IBAN;
+    $bic         = BIC;
+    $recipient   = KONTOINHABER;
+    $currency    = "EUR";
+    $amount      = number_format($invoice['total_amount'], 2, '.', ''); //number_format(99.99, 2, '.', ''); // Format amount with period
+    $subject     = $invoice_id;
 
-// QR Code Daten (Zeilenumbruch beachten)
-$data = "BCD\n" // QR Code Version
-      . "001\n" // Profile ID
-      . "1\n"   // Character Encoding
-      . "SCT\n" // SEPA Credit Transfer
-      . "{$bic}\n"
-      . "{$recipient}\n"
-      . "{$iban}\n"
-      . "{$currency}{$amount}\n" // Amount with currency
-      . "\n" // Blank line for optional fields
-      . "{$subject}\n" // Payment reference
-      . "\n";// Blank line for optional fields
-      #. "{$comment}"; // Comment
+    // QR Code Daten (Zeilenumbruch beachten)
+    $data = "BCD\n" // QR Code Version
+        . "001\n" // Profile ID
+        . "1\n"   // Character Encoding
+        . "SCT\n" // SEPA Credit Transfer
+        . "{$bic}\n"
+        . "{$recipient}\n"
+        . "{$iban}\n"
+        . "{$currency}{$amount}\n" // Amount with currency
+        . "\n" // Blank line for optional fields
+        . "{$subject}\n" // Payment reference
+        . "\n";// Blank line for optional fields
+        #. "{$comment}"; // Comment
 
-// Debugging: Output QR code data
-#echo "<pre>";
-#echo htmlspecialchars($data);
-#echo "</pre>";
+    // Debugging: Output QR code data
+    #echo "<pre>";
+    #echo htmlspecialchars($data);
+    #echo "</pre>";
 
-// Dateiname und Pfad (gleiche Verzeichnis wie das Skript)
-$tempDir = __DIR__ . '/';
-$filename = "SEPA_" . time() . ".png";
+    // Dateiname und Pfad (gleiche Verzeichnis wie das Skript)
+    $tempDir = __DIR__ . '/';
+    $filename = "SEPA_" . time() . ".png";
 
-// QR Code generieren
-QRcode::png($data, $tempDir . $filename, QR_ECLEVEL_M, 4, 2);
+    // QR Code generieren
+    QRcode::png($data, $tempDir . $filename, QR_ECLEVEL_M, 4, 2);
+}
 
 // Fetch client details
 $client_sql = "SELECT * FROM clients WHERE id = " . $invoice['client_id'];
@@ -178,6 +91,7 @@ $pdf->AddFont('DejaVuSans', '', 'DejaVuSans.ttf', true);
 $pdf->AddFont('DejaVuSans', 'B', 'DejaVuSans-Bold.ttf', true);
 $pdf->AddFont('DejaVuSansCondensed', '', 'DejaVuSansCondensed.ttf', true);
 $pdf->AddFont('DejaVuSansMono', '', 'DejaVuSansMono.ttf', true);
+$pdf->AddFont('DejaVuSansCondensed-Oblique', '', 'DejaVuSerifCondensed-Italic.ttf', true);
 
 // Set the font for text
 $pdf->SetFont('DejaVuSansCondensed', '', 20);
@@ -205,7 +119,10 @@ $pdf->Cell(0, 5, 'Rechnungsnummer: ' . htmlspecialchars($invoice['invoice_number
 $dateOnly = isset($invoice['date']) ? date('d.m.Y', strtotime($invoice['date'])) : 'N/A';
 $pdf->Cell(0, 5, 'Datum: ' . htmlspecialchars($dateOnly), 0, 1, 'R');
 $pdf->Cell(0, 5, 'Ihre Kundennummer: ' . htmlspecialchars($client['kundennummer'] ?? 'N/A'), 0, 1, 'R');
-$pdf->Cell(0, 5, 'Zahlungsziel: ' . htmlspecialchars($invoice['payment_terms'] ?? 'N/A'), 0, 1, 'R');
+if (isset($invoice['due_date']) ) {
+    $pdf->Cell(0, 5, 'Zahlungsziel: ' . htmlspecialchars($invoice['due_date'] ?? 'N/A'), 0, 1, 'R');
+}
+
 // Page width and image width
 $pageWidth = $pdf->GetPageWidth();
 $imageWidth = 20; // Width of the image
@@ -217,15 +134,17 @@ $xPosition = $pageWidth - $imageWidth - 10; // 10 units from the right edge, adj
 // Y position for text
 $textYPosition = $pdf->GetY();
 $pdf->SetXY(10, $textYPosition); // Set X position to the left margin and the current Y position
-$pdf->Cell(0, 5, 'Zahlungsform: ' . htmlspecialchars($invoice['payment_method'] ?? 'N/A'), 0, 1, 'R');
+if (isset($invoice['payment_form'])) {
+    $pdf->Cell(0, 5, 'Zahlungsform: ' . htmlspecialchars($invoice['payment_form'] ?? 'N/A'), 0, 1, 'R');
+}
 
 // Y position for image: just below the text
 $imageYPosition = $textYPosition + 5 + 5; // Add text height (5) and some spacing (5) to get below the text
 $pdf->SetXY($xPosition, $imageYPosition); // Set X position for image and Y position just below the text
 
-// Add the image
-$pdf->Image($tempDir . $filename, $xPosition, $imageYPosition, $imageWidth, $imageHeight, '', '', '', true, 300, '', '', '', '', 'R');
-
+if($invoice['payment_form'] == 'Rechnung'){
+    $pdf->Image($tempDir . $filename, $xPosition, $imageYPosition, $imageWidth, $imageHeight, '', '', '', true, 300, '', '', '', '', 'R');
+}
 
 // Client Info
 $pdf->SetXY(10, 38);
@@ -243,6 +162,24 @@ $colWidths = [
     'Preis' => COL_PRICE_WIDTH,
     'Total' => COL_TOTAL_WIDTH,
 ];
+// Set font and position
+
+// Define the text
+// Add the first line
+$pdf->SetFont('DejaVuSansCondensed-Oblique', '', 8);
+
+
+$pdf->Cell(0, 5, 'Vielen Dank für Ihr Vertrauen in unsere Werkstatt.', 0, 1, 'L');
+
+// Add a line break before the next line
+$pdf->Ln(0); // Adjust the spacing between lines as needed
+
+// Add the second line
+$pdf->Cell(0, 5, 'Wir stellen Ihnen hiermit folgende Leistungen in Rechnung:', 0, 1, 'L');
+// Set the width of the MultiCell to fit your page layout
+
+// Add the text with automatic line break
+$pdf->SetFont('DejaVuSans', '', 10); // Font size for product_name
 
 // Print header cells with left alignment and no background color
 $pdf->Cell($colWidths['POS'], 10, 'POS', 0, 0, 'L');
@@ -250,6 +187,7 @@ $pdf->Cell($colWidths['Produkt'], 10, 'Produkt', 0, 0, 'L');
 $pdf->Cell($colWidths['Menge'], 10, 'Menge', 0, 0, 'L');
 $pdf->Cell($colWidths['Preis'], 10, 'Preis', 0, 0, 'L');
 $pdf->Cell($colWidths['Total'], 10, 'Total', 0, 1, 'L');
+$pdf->SetFont('DejaVuSans', '', 8); // Font size for product_name
 
 // Save the current X and Y positions for drawing the border
 $x = $pdf->GetX(); // X position after header cells
@@ -285,7 +223,7 @@ while ($item = $items_result->fetch_assoc()) {
     $pdf->Cell($colWidths['POS'], ROW_HEIGHT, $counter, 0, 0, 'L');
 
     // Set font and color for product_name
-    $pdf->SetFont('DejaVuSansCondensed', '', 12); // Font size for product_name
+    $pdf->SetFont('DejaVuSansCondensed', '', 11); // Font size for product_name
     $pdf->SetTextColor(0, 0, 0); // Black color
 
     // Write product_name
@@ -296,7 +234,7 @@ while ($item = $items_result->fetch_assoc()) {
     $productNameHeight = $pdf->GetY() - $y;
 
     // Set font and color for product_description
-    $pdf->SetFont('DejaVuSans', '', 10); // Font for description
+    $pdf->SetFont('DejaVuSans', '', 8); // Font for description
     $pdf->SetTextColor(128, 128, 128); // Grey color
 
     // Write product_description
@@ -331,22 +269,37 @@ while ($item = $items_result->fetch_assoc()) {
 }
 
 
-
-
 // Invoice Totals
 $pdf->Ln(10);
-$pdf->SetFont('DejaVuSans', '', 12);
-$pdf->SetFillColor(78, 140, 255); // Light gray background for totals
-$pdf->Cell(160, 10, 'NETTOBETRAG:', 0, 0, 'R', true);
-$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['total'] ?? 0, 2)) . ' €', 0, 1, 'R', true);
+// Set the font for the entire section
+$pdf->SetFont('DejaVuSansCondensed', '', 10);
 
+// Set a fill color for the header rows
+$pdf->SetFillColor(230, 230, 230); // Light gray background
+
+// Define border style
+$borderStyle = 'LTRB'; // Left, Top, Right, Bottom
+
+// Add NETTOBETRAG row
+$pdf->Cell(160, 10, 'NETTOBETRAG ', $borderStyle, 0, 'R', false);
+$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['sub_total'] ?? 0, 2)) . ' €', $borderStyle, 1, 'C', false);
+
+// Check if discount is available and show it
 if (isset($invoice['discount']) && $invoice['discount'] > 0) {
-    // Show the Rabatt (discount) row
-    $pdf->Cell(157, 5, 'Rabatt:', 0, 0, 'R', true);
-    $pdf->Cell(25, 5, htmlspecialchars(number_format($invoice['discount'], 2)) . ' €', 0, 1, 'R', true);
+    $pdf->Cell(160, 10, 'Rabatt ', $borderStyle, 0, 'R', false);
+    $pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['discount'], 2)) . ' €', $borderStyle, 1, 'C', false);
 }
-$pdf->Cell(160, 10, 'MwSt:', 0, 0, 'R', true);
-$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['tax'] ?? 0, 2)) . ' €', 0, 1, 'R', true);
+
+// Add MwSt row
+$pdf->Cell(160, 10, 'MwSt ', $borderStyle, 0, 'R', false);
+$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['tax'] ?? 0, 2)) . ' €', $borderStyle, 1, 'C', false);
+
+// Add Gesamtbetrag row
+$pdf->Cell(160, 10, 'Gesamtbetrag ', $borderStyle, 0, 'R', false);
+$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['total_amount'] ?? 0, 2)) . ' €', $borderStyle, 1, 'C', false);
+
+// Reset the fill color and font for the next section
+$pdf->SetFillColor(255, 255, 255); // White background
 
 
 
@@ -369,6 +322,8 @@ if ($action === 'download') {
 
 // End output buffering
 ob_end_flush();
+if($invoice['payment_form'] == 'Rechnung'){
 unlink($tempDir . $filename);
+}
 
 ?>
