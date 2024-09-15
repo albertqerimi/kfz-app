@@ -30,7 +30,7 @@ if ($filter_date_to) {
 
 // Prepare the SQL query with pagination and search filter
 $invoice_sql = "SELECT invoices.id AS invoice_id, 
-                       invoices.invoice_number, 
+                       
                        invoices.date, 
                        invoices.total_amount, 
                        clients.name AS client_name, 
@@ -148,8 +148,9 @@ $conn->close();
                 // Display the table with results
                 echo '<tbody>';
                 while ($invoice = $result->fetch_assoc()): ?>
+                    
                     <tr>
-                        <td><?php echo htmlspecialchars($invoice['invoice_number']); ?></td>
+                        <td><?php echo htmlspecialchars($invoice['invoice_id']); ?></td>
                         <td><?php echo htmlspecialchars($invoice['date']); ?></td>
                         <td><?php echo htmlspecialchars($invoice['client_name']); ?></td>
                         <td><?php echo htmlspecialchars($invoice['vehicle_model']) ?: 'Bar Verkauf'; ?></td>

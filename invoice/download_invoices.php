@@ -1,6 +1,6 @@
 <?php
-include '../includes/header.php';
-include '../config.php';
+require_once '../includes/header.php';
+
 require_once('../fpdf/fpdf.php');
 require_once 'create_pdf.php'; // Assume this file includes all necessary logic to generate PDF
 
@@ -24,7 +24,6 @@ if ($filter_date_to) {
 
 // Prepare the SQL query with search and date filters
 $invoice_sql = "SELECT invoices.id AS invoice_id, 
-                       invoices.invoice_number, 
                        invoices.date, 
                        invoices.total_amount, 
                        clients.name AS client_name, 

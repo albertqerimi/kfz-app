@@ -10,20 +10,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Function to generate the next invoice number
-function generateInvoiceNumber($conn) {
-    $result = $conn->query("SELECT MAX(invoice_number) AS max_invoice_number FROM invoices");
-    $row = $result->fetch_assoc();
-    $max_invoice_number = $row['max_invoice_number'];
-
-    // Increment the invoice number by 1, or start from 1 if null
-    if ($max_invoice_number) {
-        return str_pad(intval($max_invoice_number) + 1, 7, '0', STR_PAD_LEFT);
-    } else {
-        return str_pad(1, 7, '0', STR_PAD_LEFT);
-    }
-}
-
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Display POST data for debugging
@@ -46,23 +32,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tax = ($total_amount / (1 + $tax_rate)) * $tax_rate;
 
     // Generate a unique invoice number
-    $invoice_number = generateInvoiceNumber($conn);
     // Check if 'Bar Verkauf' is selected or no specific vehicle
     if ($vehicle_id <= 0) {
         $vehicle_id = NULL; // Use NULL to represent no vehicle
     }
-    echo $vehicle_id;
 
-    $invoice_sql = "INSERT INTO invoices (invoice_number, client_id, date, due_date, payment_form, sub_total, total_amount, discount, tax, vehicle_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $invoice_sql = "INSERT INTO invoices (client_id, date, due_date, payment_form, sub_total, total_amount, discount, tax, vehicle_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     // Prepare the statement
     $stmt = $conn->prepare($invoice_sql);
 
     // Bind parameters
     $stmt->bind_param(
-        "sisssddidi", 
-        $invoice_number,  // s = string
+        "isssddidi", 
         $client_id,       // i = integer
         $date,            // s = string (date in 'Y-m-d' format)
         $due_date,        // s = string (date in 'Y-m-d' format) or NULL
@@ -129,7 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         }
         
-
+        header("Location: view_invoice.php?invoice_id=$invoice_id");
+        exit;  // Ensure no further code is executed after the redirect
         echo "<div class='alert alert-success'>Rechnung erfolgreich erstellt.</div>";
     } else {
         echo "<div class='alert alert-danger'>Error creating invoice: " . $conn->error . "</div>";
@@ -181,9 +165,9 @@ $autos_result = $conn->query($autos_sql);
         <div class="form-group">
             <label for="payment_form">Zahlungsart </label>
             <select id="payment_form" name="payment_form" class="form-control" required>
-                <option value="invoice">Rechnung</option>
-                <option value="credit_card">Kreditkarte</option>
-                <option value="cash">Barzahlung</option>               
+                <option value="Rechnung">Rechnung</option>
+                <option value="Karte">Kreditkarte</option>
+                <option value="Bar">Barzahlung</option>               
             </select>
         </div>
 
