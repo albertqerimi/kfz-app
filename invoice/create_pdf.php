@@ -204,27 +204,43 @@ $pdf->Cell(0, 5, 'Wir stellen Ihnen hiermit folgende Leistungen in Rechnung:', 0
 // Add the text with automatic line break
 $pdf->SetFont('DejaVuSans', '', 10); // Font size for product_name
 
-// Print header cells with left alignment and no background color
-$pdf->Cell($colWidths['POS'], 10, 'POS', 0, 0, 'L');
-$pdf->Cell($colWidths['Produkt'], 10, 'Produkt', 0, 0, 'L');
-$pdf->Cell($colWidths['Menge'], 10, 'Menge', 0, 0, 'L');
-$pdf->Cell($colWidths['Preis'], 10, 'Preis', 0, 0, 'L');
-$pdf->Cell($colWidths['Total'], 10, 'Total', 0, 1, 'L');
-$pdf->SetFont('DejaVuSans', '', 8); // Font size for product_name
+// Define the margin to leave on the right side of the page
+$rightMargin = 10;
 
-// Save the current X and Y positions for drawing the border
-$x = $pdf->GetX(); // X position after header cells
-$y = $pdf->GetY(); // Y position after header cells
+// Get the page width
+$pageWidth = $pdf->GetPageWidth();
 
-// Calculate total width of columns
+// Calculate the total width of all columns
 $totalWidth = array_sum($colWidths);
+$scalingFactor = ($pageWidth - $rightMargin) / $totalWidth;
+$adjustedColWidths = array_map(function($width) use ($scalingFactor) {
+    return $width * $scalingFactor;
+}, $colWidths);
 
-// Adjust the width for the line to end 30 units before the edge
-$lineWidth = $totalWidth - 15;
+// Print header cells with left alignment and no background color
+$pdf->Cell($adjustedColWidths['POS'], 10, 'POS', 0, 0, 'L');
+$pdf->Cell($adjustedColWidths['Produkt'], 10, 'Produkt', 0, 0, 'L');
+$pdf->Cell($adjustedColWidths['Menge'], 10, 'Menge', 0, 0, 'R');
+$pdf->Cell($adjustedColWidths['Preis'], 10, 'Preis', 0, 0, 'R');
+
+// Ensure there's space before the "Total" column
+$spaceBeforeTotal = 10; // Adjust this space as needed
+
+// Calculate the adjusted width for the "Total" column
+$adjustedTotalWidth = $adjustedColWidths['Total'] - $spaceBeforeTotal;
+
+// Print the "Total" column with the adjusted width
+$pdf->Cell($adjustedTotalWidth, 10, 'Total', 0, 1, 'R');
 
 // Draw a bottom border below the header spanning the adjusted width of columns
+$y = $pdf->GetY(); // Y position after header cells
 $pdf->SetXY(10, $y); // Move to the start of the row
-$pdf->Cell($lineWidth, 0, '', 'T'); // Draw the horizontal line with top border
+
+// Recalculate the total width for the border
+$adjustedTotalWidthWithMargin = array_sum($adjustedColWidths) - $spaceBeforeTotal;
+
+// Draw the horizontal line with bottom border
+$pdf->Cell($adjustedTotalWidthWithMargin, 0, '', 'B');
 
 // Reset Y position after header
 $startY = $pdf->GetY();
@@ -263,7 +279,10 @@ while ($item = $items_result->fetch_assoc()) {
     // Write product_description
     $pdf->SetXY($pdf->GetX(), $y + $productNameHeight - 5); // Adjust vertical position to move description up
     $product_description = htmlspecialchars($item['product_description'] ?? '');
+    $pdf->SetFillColor(255, 0, 0); // RGB values for red
+
     $pdf->MultiCell($colWidths['Produkt'], ROW_HEIGHT, $product_description, 0, 'L', false);
+    $pdf->SetFillColor(255, 255, 255); // RGB values for red
 
     $pdf->SetTextColor(0, 0, 0); // Reset color
 
@@ -272,20 +291,18 @@ while ($item = $items_result->fetch_assoc()) {
 
     // Calculate the height of the row
     $row_height = max($productNameHeight, $descriptionHeight);
-
+    $pdf->SetXY($x + $colWidths['Produkt'], $y);
+    // Print quantity, price, and total cells
+    $pdf->Cell($colWidths['Menge'], $row_height, htmlspecialchars($item['quantity']) . ' ' . ($item['quantity_type'] ?? '0'), 0, 0, 'R');
+    $pdf->Cell($colWidths['Preis'], $row_height, htmlspecialchars(number_format($item['price'] ?? 0, 2)), 0, 0, 'R');
+    $pdf->Cell($colWidths['Total'], $row_height, htmlspecialchars(number_format($item['total_price'] ?? 0, 2)), 0, 1, 'R');
     // Check if there is enough space left on the page
     if ($row_height > $pdf->getAvailableSpace()) {
         $pdf->AddPage(); // Add a new page
         $pdf->SetXY($x, $pdf->GetY()); // Reset X and Y position to start of new page
-    } else {
-        // Move to the next row and adjust X position
-        $pdf->SetXY($x + $colWidths['Produkt'], $y);
-    }
+    } 
 
-    // Print quantity, price, and total cells
-    $pdf->Cell($colWidths['Menge'], $row_height, htmlspecialchars($item['quantity'] ?? '0'), 0, 0, 'C');
-    $pdf->Cell($colWidths['Preis'], $row_height, htmlspecialchars(number_format($item['price'] ?? 0, 2)), 0, 0, 'C');
-    $pdf->Cell($colWidths['Total'], $row_height, htmlspecialchars(number_format($item['total_price'] ?? 0, 2)), 0, 1, 'C');
+   
 
     // Increment position number
     $counter++;
@@ -304,21 +321,21 @@ $pdf->SetFillColor(230, 230, 230); // Light gray background
 
 // Add NETTOBETRAG row
 $pdf->Cell(160, 10, 'NETTOBETRAG ', "TB", 0, 'R', false);
-$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['sub_total'] ?? 0, 2)) . ' €', 'TB', 1, 'C', false);
+$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['sub_total'] ?? 0, 2)) . ' €', 'TB', 1, 'R', false);
 
 // Check if discount is available and show it
 if (isset($invoice['discount']) && $invoice['discount'] > 0) {
     $pdf->Cell(160, 10, 'Rabatt ', 'B', 0, 'R', false);
-    $pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['discount'], 2)) . ' €', 'B', 1, 'C', false);
+    $pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['discount'], 2)) . ' €', 'B', 1, 'R', false);
 }
 
 // Add MwSt row
 $pdf->Cell(160, 10, 'MwSt ', 'B', 0, 'R', false);
-$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['tax'] ?? 0, 2)) . ' €', 'B', 1, 'C', false);
+$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['tax'] ?? 0, 2)) . ' €', 'B', 1, 'R', false);
 
 // Add Gesamtbetrag row
 $pdf->Cell(160, 10, 'Gesamtbetrag ', 'B', 0, 'R', false);
-$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['total_amount'] ?? 0, 2)) . ' €', 'B', 1, 'C', false);
+$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['total_amount'] ?? 0, 2)) . ' €', 'B', 1, 'R', false);
 
 // Reset the fill color and font for the next section
 $pdf->SetFillColor(255, 255, 255); // White background
