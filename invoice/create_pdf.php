@@ -1,9 +1,10 @@
 <?php 
 require('../fpdf/tfpdf.php'); // Ensure the path is correct
 
-include '../config.php'; // Ensure this includes your database connection settings
+include '../config.php';
+
 include_once '../phpqrcode/qrlib.php';
-include_once 'myPDF.php';
+include_once 'CustomPDF.php';
 // Create a new database connection
 $conn = new mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
 
@@ -13,13 +14,8 @@ if ($conn->connect_error) {
 }
 
 
-// Instantiation of FPDF class
-$pdf = new myPDF();
-  
-// Define an alias for number of pages
-$pdf->AliasNbPages();
-$pdf->AddPage();
-#$pdf->headerAttributes();
+
+
 
 // Start output buffering
 ob_start();
@@ -41,6 +37,7 @@ if (!$invoice_result || $invoice_result->num_rows == 0) {
     exit;
 }
 $invoice = $invoice_result->fetch_assoc();
+$qrCodePath = null;
 
 if($invoice['payment_form'] == 'Rechnung'){
     $iban        = IBAN;
@@ -48,7 +45,7 @@ if($invoice['payment_form'] == 'Rechnung'){
     $recipient   = KONTOINHABER;
     $currency    = "EUR";
     $amount      = number_format($invoice['total_amount'], 2, '.', ''); //number_format(99.99, 2, '.', ''); // Format amount with period
-    $subject     = $invoice_id;
+    $subject = "Rechnung Nr. {$invoice_id}";
 
     // QR Code Daten (Zeilenumbruch beachten)
     $data = "BCD\n" // QR Code Version
@@ -75,8 +72,15 @@ if($invoice['payment_form'] == 'Rechnung'){
 
     // QR Code generieren
     QRcode::png($data, $tempDir . $filename, QR_ECLEVEL_M, 4, 2);
+    $qrCodePath = $tempDir . $filename;
 }
+// Instantiation of FPDF class
+$pdf = new CustomPDF($invoice, $qrCodePath);
 
+  #$pdf->headerAttributes();
+// Define an alias for number of pages
+$pdf->AliasNbPages();
+$pdf->AddPage();
 // Fetch client details
 $client_sql = "SELECT * FROM clients WHERE id = " . $invoice['client_id'];
 $client_result = $conn->query($client_sql);
@@ -115,13 +119,14 @@ $pdf->Ln(0); // Adjust spacing as needed
 $pdf->Image(LOGO_PATH, 150, 10, 50); // Parameters: path, x position, y position, width
 
 $pdf->SetXY(10, 35);
-$pdf->Cell(0, 5, 'Rechnungsnummer: ' . htmlspecialchars($invoice['invoice_number'] ?? 'N/A'), 0, 1, 'R');
+$pdf->Cell(0, 5, 'Rechnungsnummer: ' . htmlspecialchars( $invoice['id'] ?? 'N/A'), 0, 1, 'R');
 $dateOnly = isset($invoice['date']) ? date('d.m.Y', strtotime($invoice['date'])) : 'N/A';
 $pdf->Cell(0, 5, 'Datum: ' . htmlspecialchars($dateOnly), 0, 1, 'R');
 $pdf->Cell(0, 5, 'Ihre Kundennummer: ' . htmlspecialchars($client['kundennummer'] ?? 'N/A'), 0, 1, 'R');
 if (isset($invoice['due_date']) ) {
     $pdf->Cell(0, 5, 'Zahlungsziel: ' . htmlspecialchars($invoice['due_date'] ?? 'N/A'), 0, 1, 'R');
 }
+
 
 // Page width and image width
 $pageWidth = $pdf->GetPageWidth();
@@ -137,13 +142,31 @@ $pdf->SetXY(10, $textYPosition); // Set X position to the left margin and the cu
 if (isset($invoice['payment_form'])) {
     $pdf->Cell(0, 5, 'Zahlungsform: ' . htmlspecialchars($invoice['payment_form'] ?? 'N/A'), 0, 1, 'R');
 }
+// Check if vehicle_id is present
+if (!empty($invoice['vehicle_id'])) {
+    $pdf->SetFont('DejaVuSansCondensed', '', 10);
 
-// Y position for image: just below the text
-$imageYPosition = $textYPosition + 5 + 5; // Add text height (5) and some spacing (5) to get below the text
-$pdf->SetXY($xPosition, $imageYPosition); // Set X position for image and Y position just below the text
+    // Get the vehicle ID from the invoice
+    $vehicleId = $invoice['vehicle_id'];
 
-if($invoice['payment_form'] == 'Rechnung'){
-    $pdf->Image($tempDir . $filename, $xPosition, $imageYPosition, $imageWidth, $imageHeight, '', '', '', true, 300, '', '', '', '', 'R');
+    // Prepare and execute the query to fetch vehicle details
+    $query = $conn->prepare("SELECT license_plate, brand, model FROM vehicles WHERE id = ?");
+    $query->bind_param("i", $vehicleId); // Bind the integer parameter
+    $query->execute();
+    $result = $query->get_result();
+    $vehicle = $result->fetch_assoc();
+
+    // Check if vehicle details are retrieved successfully
+    if ($vehicle) {
+        $pdf->Ln(8); // Add a line break
+        // Format vehicle details for PDF output
+        $vehicleDetails = "Kennzeichen: " . htmlspecialchars($vehicle['license_plate']) . "\n" .
+        "Marke: " . htmlspecialchars($vehicle['brand']) . "\n" .
+        "Modell: " . htmlspecialchars($vehicle['model']);
+
+        // Add vehicle details to the PDF
+        $pdf->MultiCell(0, 5,   $vehicleDetails, 0, 'R');
+    } 
 }
 
 // Client Info
@@ -278,36 +301,27 @@ $pdf->SetFont('DejaVuSansCondensed', '', 10);
 $pdf->SetFillColor(230, 230, 230); // Light gray background
 
 // Define border style
-$borderStyle = 'LTRB'; // Left, Top, Right, Bottom
 
 // Add NETTOBETRAG row
-$pdf->Cell(160, 10, 'NETTOBETRAG ', $borderStyle, 0, 'R', false);
-$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['sub_total'] ?? 0, 2)) . ' €', $borderStyle, 1, 'C', false);
+$pdf->Cell(160, 10, 'NETTOBETRAG ', "TB", 0, 'R', false);
+$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['sub_total'] ?? 0, 2)) . ' €', 'TB', 1, 'C', false);
 
 // Check if discount is available and show it
 if (isset($invoice['discount']) && $invoice['discount'] > 0) {
-    $pdf->Cell(160, 10, 'Rabatt ', $borderStyle, 0, 'R', false);
-    $pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['discount'], 2)) . ' €', $borderStyle, 1, 'C', false);
+    $pdf->Cell(160, 10, 'Rabatt ', 'B', 0, 'R', false);
+    $pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['discount'], 2)) . ' €', 'B', 1, 'C', false);
 }
 
 // Add MwSt row
-$pdf->Cell(160, 10, 'MwSt ', $borderStyle, 0, 'R', false);
-$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['tax'] ?? 0, 2)) . ' €', $borderStyle, 1, 'C', false);
+$pdf->Cell(160, 10, 'MwSt ', 'B', 0, 'R', false);
+$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['tax'] ?? 0, 2)) . ' €', 'B', 1, 'C', false);
 
 // Add Gesamtbetrag row
-$pdf->Cell(160, 10, 'Gesamtbetrag ', $borderStyle, 0, 'R', false);
-$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['total_amount'] ?? 0, 2)) . ' €', $borderStyle, 1, 'C', false);
+$pdf->Cell(160, 10, 'Gesamtbetrag ', 'B', 0, 'R', false);
+$pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['total_amount'] ?? 0, 2)) . ' €', 'B', 1, 'C', false);
 
 // Reset the fill color and font for the next section
 $pdf->SetFillColor(255, 255, 255); // White background
-
-
-
-// Check if auto details are needed
-if (!empty($invoice['auto_details'])) {
-    $pdf->Ln(10);
-    $pdf->MultiCell(0, 10, "Auto Details:\n" . htmlspecialchars($invoice['auto_details']));
-}
 
 
 // Finalize PDF output
@@ -323,7 +337,7 @@ if ($action === 'download') {
 // End output buffering
 ob_end_flush();
 if($invoice['payment_form'] == 'Rechnung'){
-unlink($tempDir . $filename);
+unlink($qrCodePath);
 }
 
 ?>

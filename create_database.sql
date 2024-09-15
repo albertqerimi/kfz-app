@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS vehicles (
 -- Create invoices table
 CREATE TABLE IF NOT EXISTS invoices (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    invoice_number VARCHAR(50) NOT NULL UNIQUE,
     client_id INT(11) NOT NULL,
     date DATETIME NOT NULL,
     due_date DATE,
@@ -94,8 +93,8 @@ INSERT INTO products (name) VALUES
 ('Tire Rotation');
 
 -- Example of adding an invoice
-INSERT INTO invoices (invoice_number, client_id, date, sub_total, discount, tax, vehicle_id, total_amount) VALUES
-('000001', 1, NOW(), 100.00, 10.00, 17.10, NULL, 107.10);
+INSERT INTO invoices ( client_id, date, sub_total, discount, tax, vehicle_id, total_amount) VALUES
+(, 1, NOW(), 100.00, 10.00, 17.10, NULL, 107.10);
 
 INSERT INTO invoice_items (invoice_id, product_id, quantity, price, total_price) VALUES
 (1, 1, 1, 30.00, 30.00),
