@@ -175,8 +175,8 @@ $pdf->Cell(0, 5, htmlspecialchars($client['name'] ?? 'N/A'), 0, 1);
 $pdf->Cell(0, 5, htmlspecialchars($client['street'] ?? '') . ' ' . htmlspecialchars($client['house_number'] ?? ''), 0, 1);
 $pdf->Cell(0, 5, htmlspecialchars($client['postal_code'] ?? '') . ' ' . htmlspecialchars($client['city'] ?? ''), 0, 1);
 $pdf->Cell(0, 5, htmlspecialchars($client['country'] ?? 'N/A'), 0, 1);
-$pdf->Ln(40);
-// Define column widths
+$pdf->Ln(30);
+
 // Define column widths
 $colWidths = [
     'POS' => 10,
@@ -218,8 +218,8 @@ $adjustedColWidths = array_map(function($width) use ($scalingFactor) {
 }, $colWidths);
 
 // Print header cells with left alignment and no background color
-$pdf->Cell($adjustedColWidths['POS'], 10, 'POS', 0, 0, 'L');
-$pdf->Cell($adjustedColWidths['Produkt'], 10, 'Produkt', 0, 0, 'L');
+$pdf->Cell(10, 10, 'POS', 0, 0, 'L');
+$pdf->Cell($adjustedColWidths['Produkt'], 10, 'Produkt', 0, 0, 'L',false);
 $pdf->Cell($adjustedColWidths['Menge'], 10, 'Menge', 0, 0, 'R');
 $pdf->Cell($adjustedColWidths['Preis'], 10, 'Preis', 0, 0, 'R');
 
@@ -248,7 +248,6 @@ $pdf->SetY($startY);
 
 // Initialize position counter
 $counter = 1;
-
 // Print items
 while ($item = $items_result->fetch_assoc()) {
     // Save the current X and Y positions
@@ -259,7 +258,7 @@ while ($item = $items_result->fetch_assoc()) {
     $pdf->SetTextColor(0, 0, 0); // Black color
 
     // Write position number
-    $pdf->Cell($colWidths['POS'], ROW_HEIGHT, $counter, 0, 0, 'L');
+    $pdf->Cell($adjustedColWidths['POS'], ROW_HEIGHT, $counter, 0, 0, 'L');
 
     // Set font and color for product_name
     $pdf->SetFont('DejaVuSansCondensed', '', 11); // Font size for product_name
@@ -267,7 +266,7 @@ while ($item = $items_result->fetch_assoc()) {
 
     // Write product_name
     $product_name = htmlspecialchars($item['product_name'] ?? 'N/A');
-    $pdf->Cell($colWidths['Produkt'], ROW_HEIGHT, $product_name, 0, 'L', false);
+    $pdf->Cell($adjustedColWidths['Produkt'], ROW_HEIGHT, $product_name, 0, 'L', false);
 
     // Calculate the height of the product name cell
     $productNameHeight = $pdf->GetY() - $y;
@@ -279,11 +278,8 @@ while ($item = $items_result->fetch_assoc()) {
     // Write product_description
     $pdf->SetXY($pdf->GetX(), $y + $productNameHeight - 5); // Adjust vertical position to move description up
     $product_description = htmlspecialchars($item['product_description'] ?? '');
-    $pdf->SetFillColor(255, 0, 0); // RGB values for red
 
-    $pdf->MultiCell($colWidths['Produkt'], ROW_HEIGHT, $product_description, 0, 'L', false);
-    $pdf->SetFillColor(255, 255, 255); // RGB values for red
-
+    $pdf->MultiCell($adjustedColWidths['Produkt'] + 2, ROW_HEIGHT, $product_description, 0, 'L', false );
     $pdf->SetTextColor(0, 0, 0); // Reset color
 
     // Calculate the height of the description cell
@@ -292,10 +288,18 @@ while ($item = $items_result->fetch_assoc()) {
     // Calculate the height of the row
     $row_height = max($productNameHeight, $descriptionHeight);
     $pdf->SetXY($x + $colWidths['Produkt'], $y);
+
     // Print quantity, price, and total cells
-    $pdf->Cell($colWidths['Menge'], $row_height, htmlspecialchars($item['quantity']) . ' ' . ($item['quantity_type'] ?? '0'), 0, 0, 'R');
-    $pdf->Cell($colWidths['Preis'], $row_height, htmlspecialchars(number_format($item['price'] ?? 0, 2)), 0, 0, 'R');
-    $pdf->Cell($colWidths['Total'], $row_height, htmlspecialchars(number_format($item['total_price'] ?? 0, 2)), 0, 1, 'R');
+    $pdf->Cell(
+        $adjustedColWidths['Menge'] + 12, 
+        $row_height, 
+        rtrim(rtrim($item['quantity'], '0'), '.') . ' ' . ($item['quantity_type'] ?? '0'), 
+        0, 
+        0, 
+        'R'
+    );
+    $pdf->Cell($adjustedColWidths['Preis'] , $row_height, htmlspecialchars(number_format($item['price'] ?? 0, 2)), 0, 0, 'R');
+    $pdf->Cell($adjustedColWidths['Total'] -10, $row_height, htmlspecialchars(number_format($item['total_price'] ?? 0, 2)), 0, 1, 'R');
     // Check if there is enough space left on the page
     if ($row_height > $pdf->getAvailableSpace()) {
         $pdf->AddPage(); // Add a new page
@@ -326,7 +330,7 @@ $pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['sub_total'] ?? 0, 2)
 // Check if discount is available and show it
 if (isset($invoice['discount']) && $invoice['discount'] > 0) {
     $pdf->Cell(160, 10, 'Rabatt ', 'B', 0, 'R', false);
-    $pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['discount'], 2)) . ' €', 'B', 1, 'R', false);
+    $pdf->Cell(30, 10, htmlspecialchars(number_format($invoice['discount'], 2)) . ' %', 'B', 1, 'R', false);
 }
 
 // Add MwSt row

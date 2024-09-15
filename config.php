@@ -14,8 +14,8 @@ define('KONTOINHABER','Mentor Sejdiu');
 define('COL_PRODUCT_WIDTH', 100);
 define('COL_POS_WIDTH', 20);
 define('COL_QUANTITY_WIDTH', 30);
-define('COL_PRICE_WIDTH', 30);
-define('COL_TOTAL_WIDTH', 30);
+define('COL_PRICE_WIDTH', 20);
+define('COL_TOTAL_WIDTH', 35);
 define('ROW_HEIGHT', 10);
 // Create connection
 $conn = new mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
