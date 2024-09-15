@@ -13,16 +13,17 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
         <a class="navbar-brand" href="/kfz-app/index.php">
-        <img class="navbar-brand"  src="/kfz-app//assets/images/mentor-logo.JPG" alt="Logo">
+            <img src="/kfz-app/assets/images/mentor-logo.JPG" alt="Mentor KFZ Logo" class="brand-logo">
         </a>
-        
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-              
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" href="/kfz-app/client/list_clients.php">Kunden</a>
                 </li>
@@ -37,6 +38,7 @@
                 </li>
             </ul>
         </div>
+    </div>
+</nav>
 
-    </nav>
-    <main class="container mt-4">
+<main class="container mt-4">

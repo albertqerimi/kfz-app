@@ -38,7 +38,7 @@ $products_result = $stmt->get_result();
         <a href="/kfz-app/product/add_product.php" class="btn btn-primary">Produkt hinzufügen</a>
     </form>
     <h4 class="mt-4">Vorhandene Produkte</h4>
-    <table class="table table-striped">
+    <table class="table responsive-table table-striped">
         <thead>
             <tr>
                 <th>Produktname</th>

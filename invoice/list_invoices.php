@@ -129,10 +129,8 @@ $conn->close();
         <button type="submit" class="btn btn-primary">Download All Filtered Invoices (ZIP)</button>
     </form>
 
-
-
     <!-- Invoices Table -->
-    <table class="table">
+    <table class="table table-responsive">
         <thead>
             <tr>
                 <th>Rechnungsnummer</th>
@@ -157,7 +155,7 @@ $conn->close();
                         <td><?php echo htmlspecialchars($invoice['total_amount']); ?></td>
                         <td>
 <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>&action=view" target="_blank" class="btn btn-info btn-sm">Anzeigen</a>
-    <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>&action=download" class="btn btn-success btn-sm">Download</a>
+    <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>&action=download" class="btn btn-success btn-sm">Herunterladen</a>
                         <a href="edit_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>" class="btn btn-warning btn-sm">Bearbeiten</a>
                         </td>
                     </tr>

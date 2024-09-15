@@ -56,38 +56,40 @@ $stmt->close();
     </div>
 
     <?php if ($autos_result->num_rows > 0): ?>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
+
+        <table class="table table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Fahrgestellnummer (VIN)</th>
+                    <th>Marke</th>
+                    <th>Modell</th>
+                    <th>Baujahr</th>
+                    <th>Kennzeichen</th>
+                
+                    <th>TÜV</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = $autos_result->fetch_assoc()): ?>
                     <tr>
-                        <th>Fahrgestellnummer (VIN)</th>
-                        <th>Marke</th>
-                        <th>Modell</th>
-                        <th>Baujahr</th>
-                        <th>Kennzeichen</th>
-                    
-                        <th>TÜV</th>
-                        <th>Aktionen</th>
+                        
+                        <td><?php echo htmlspecialchars($row['vin']); ?></td>
+                        <td><?php echo htmlspecialchars($row['brand']); ?></td>
+                        <td><?php echo htmlspecialchars($row['model']); ?></td>
+                        <td><?php echo htmlspecialchars($row['year']); ?></td>
+                        <td><?php echo htmlspecialchars($row['license_plate']); ?></td>
+                        <td><?php echo htmlspecialchars($row['tuv_date']); ?></td>
+                        <td>
+                            <a href="edit.php?id=<?php echo urlencode($row['id']); ?>" class="btn btn-primary btn-sm">Bearbeiten</a>
+                            <a href="invoices.php?vehicle_id=<?php echo urlencode($row['id']); ?>" class="btn btn-danger btn-sm">Rechnungen</a>
+
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = $autos_result->fetch_assoc()): ?>
-                        <tr>
-                            
-                            <td><?php echo htmlspecialchars($row['vin']); ?></td>
-                            <td><?php echo htmlspecialchars($row['brand']); ?></td>
-                            <td><?php echo htmlspecialchars($row['model']); ?></td>
-                            <td><?php echo htmlspecialchars($row['year']); ?></td>
-                            <td><?php echo htmlspecialchars($row['license_plate']); ?></td>
-                            <td><?php echo htmlspecialchars($row['tuv_date']); ?></td>
-                            <td>
-                                <a href="edit.php?id=<?php echo urlencode($row['id']); ?>" class="btn btn-primary btn-sm">Bearbeiten</a>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+        
     <?php else: ?>
         <div class="alert alert-info">Kein Fahrzeug gefunden</div>
     <?php endif; ?>

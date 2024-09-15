@@ -278,11 +278,15 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="col-12 col-sm-3 d-flex">
                 <input type="number" class="form-control w-50" name="quantities[]" min="0.1" step="0.1" required>
                 <select name="quantity_types[]" class="form-control w-50 ml-2">
-                    <option value="stk">Stk</option>
-                    <option value="litre">Litre</option>
-                    <option value="hour">Std</option>
-                    <option value="pauschal">Pauschal</option>
-                    <option value="days">Tag(e)</option>
+                    <option value="Stk">Stk</option>
+                    <option value="Litre">Litre</option>
+                    <option value="Stunde">Std</option>
+                    <option value="Pauschal">Pauschal</option>
+                    <option value="Tag(e)">Tag(e)</option>
+                    <option value="Kilogram">Kilogram</option>
+                    <option value="Meter">Meter</option>
+                    <option value="Paket">Paket</option>
+
                 </select>
 
             </div>

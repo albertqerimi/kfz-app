@@ -55,3 +55,126 @@ main{
 .footer-section {
     margin-top: 20px;
 }
+
+.btn-primary,
+.page-link.active{
+    background-color: #1E6091 !important;
+    border-color: #1E6091 !important;
+}
+
+.btn-secondary {
+    background-color: #8D99AE !important;
+    border-color: #8D99AE !important;
+}
+
+.btn-success {
+    background-color: #017D87 !important;
+    border-color: #017D87 !important;
+}
+
+.btn-danger {
+    background-color: #E63946 !important;
+    border-color: #E63946 !important;
+}
+
+.btn-warning {
+    background-color: #FFBA08 !important;
+    border-color: #FFBA08 !important;
+}
+
+.btn-info {
+    background-color: #00B4D8 !important;
+    border-color: #00B4D8 !important;
+}
+
+.bg-primary {
+    background-color: #1E6091 !important;
+}
+
+.bg-secondary {
+    background-color: #8D99AE !important;
+}
+
+.bg-success {
+    background-color: #017D87 !important;
+}
+
+.bg-danger {
+    background-color: #E63946 !important;
+}
+
+.bg-warning {
+    background-color: #FFBA08 !important;
+}
+
+.bg-info {
+    background-color: #00B4D8 !important;
+}
+
+.text-primary {
+    color: #1E6091 !important;
+}
+
+.text-secondary {
+    color: #8D99AE !important;
+}
+
+.text-success {
+    color: #017D87 !important;
+}
+
+.text-danger {
+    color: #E63946 !important;
+}
+
+.text-warning {
+    color: #FFBA08 !important;
+}
+
+.text-info {
+    color: #00B4D8 !important;
+}
+
+
+
+.bg-dark {
+    background-color: #1D3557 !important;
+    color: white !important;
+}
+
+.text-light {
+    color: #F1FAEE !important;
+}
+
+.text-, h2 {
+    color: #1D3557 !important;
+}
+
+
+/* Navbar logo */
+.navbar .brand-logo {
+    height: 40px;
+    width: auto;
+}
+
+/* Navbar link styles */
+.navbar-nav .nav-link {
+    font-size: 16px;
+    padding: 10px 15px;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #017D87; /* Use your new success color */
+}
+
+/* Footer */
+.footer {
+    background-color: #F1FAEE; /* Light background */
+    border-top: 1px solid #e5e5e5;
+}
+
+.footer .text-muted {
+    color: #6c757d !important;
+}
+

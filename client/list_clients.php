@@ -48,7 +48,7 @@ $customer_result = $customer_stmt->get_result();
         <a href="/kfz-app/client/register_client.php" class="btn btn-primary">Kunde Registrieren</a>
     </form>
 
-    <table class="table table-striped mt-3">
+    <table class="table table-striped mt-3 table-responsive">
         <thead>
             <tr>
                 <th>Kundennummer</th>
