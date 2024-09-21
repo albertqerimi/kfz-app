@@ -76,3 +76,13 @@ CREATE TABLE IF NOT EXISTS invoice_items (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+INSERT INTO users (username, password) VALUES ('albert', '$2y$10$e0MY5pGGeLYo3szxTAPyW.u/dDhd4cDYoWh1O/J6pN62HpYY1nm4i'); 

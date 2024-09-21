@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php"); 
+    exit; 
+}
+
+?>
 <!DOCTYPE html>
 <html lang="de-DE">
 <head>
@@ -36,6 +45,12 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/kfz-app/product/list_products.php">Produkte</a>
                 </li>
+                <li class="nav-item">
+                    <a class=" btn btn-primary" href="/kfz-app/logout.php" role="button">
+                        Ausloggen
+                    </a>
+                </li>
+
             </ul>
         </div>
     </div>
