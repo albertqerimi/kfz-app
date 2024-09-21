@@ -38,7 +38,8 @@ $invoice_sql = "SELECT invoices.id AS invoice_id,
                 FROM invoices
                 JOIN clients ON invoices.client_id = clients.id
                 LEFT JOIN vehicles ON invoices.vehicle_id = vehicles.id
-                WHERE clients.name LIKE ?";
+                WHERE clients.name LIKE ?
+                ORDER BY invoices.id DESC";
 
 // If dates are provided, add them to the query
 if ($filter_date_from && $filter_date_to) {
@@ -154,9 +155,9 @@ $conn->close();
                         <td><?php echo htmlspecialchars($invoice['vehicle_model']) ?: 'Bar Verkauf'; ?></td>
                         <td><?php echo htmlspecialchars($invoice['total_amount']); ?></td>
                         <td>
-<a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>&action=view" target="_blank" class="btn btn-info btn-sm">Anzeigen</a>
-    <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>&action=download" class="btn btn-success btn-sm">Herunterladen</a>
-                        <a href="edit_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>" class="btn btn-warning btn-sm">Bearbeiten</a>
+                            <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>&action=view" target="_blank" class="btn btn-info btn-sm">Anzeigen</a>
+                            <a href="view_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>&action=download" class="btn btn-success btn-sm">Herunterladen</a>
+                            <a href="edit_invoice.php?invoice_id=<?php echo htmlspecialchars($invoice['invoice_id']); ?>" class="btn btn-warning btn-sm">Bearbeiten</a>
                         </td>
                     </tr>
                 <?php endwhile;
