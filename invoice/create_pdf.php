@@ -276,17 +276,28 @@ while ($item = $items_result->fetch_assoc()) {
     $pdf->SetTextColor(128, 128, 128); // Grey color
 
     // Write product_description
-    $pdf->SetXY($pdf->GetX(), $y + $productNameHeight - 5); // Adjust vertical position to move description up
+    $pdf->SetXY($pdf->GetX(), $y + $productNameHeight - 3); // Adjust vertical position to move description up
     $product_description = htmlspecialchars($item['product_description'] ?? '');
 
-    $pdf->MultiCell($adjustedColWidths['Produkt'] + 2, ROW_HEIGHT, $product_description, 0, 'L', false );
-    $pdf->SetTextColor(0, 0, 0); // Reset color
+    $initialY = $pdf->GetY();
+
+    // Render the MultiCell
+    $pdf->MultiCell($adjustedColWidths['Produkt'] + 2, 5, $product_description, 0, 'L', false);
+    
+    // Save the Y position after rendering the MultiCell
+    $finalY = $pdf->GetY();
+    
+    // Calculate the height of the MultiCell content
+    $cellHeight = $finalY - $initialY;
+    
+    // Add extra space underneath the MultiCell
+    $pdf->Ln(1);    $pdf->SetTextColor(0, 0, 0); // Reset color
 
     // Calculate the height of the description cell
     $descriptionHeight = $pdf->GetY() - ($y + $productNameHeight);
 
     // Calculate the height of the row
-    $row_height = max($productNameHeight, $descriptionHeight);
+    $row_height = max($productNameHeight, $descriptionHeight) +6;
     $pdf->SetXY($x + $colWidths['Produkt'], $y);
 
     // Print quantity, price, and total cells
