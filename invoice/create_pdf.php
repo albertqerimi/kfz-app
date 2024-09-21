@@ -359,10 +359,10 @@ $pdf->SetFillColor(255, 255, 255); // White background
 // Finalize PDF output
 if ($action === 'download') {
     // Force download the PDF file
-    $pdf->Output('D', 'invoice_' . $invoice_id . '.pdf');
+    $pdf->Output('D', 'Rechnung_' . $invoice_id . '.pdf');
 } else {
     // Display PDF in browser
-    $pdf->Output('I', 'invoice_' . $invoice_id . '.pdf');
+    $pdf->Output('I', 'Rechnung_' . $invoice_id . '.pdf');
 }
 
 
