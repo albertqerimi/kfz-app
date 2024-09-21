@@ -8,9 +8,6 @@
     <script src="/kfz-app/assets/js/jquery.min.js"></script>
     <script src="/kfz-app/assets/js/jquery-ui.js"></script>
     <script src="/kfz-app/assets/js/bootstrap.bundle.min.js"></script>
-
-
-
     <script src="/kfz-app/assets/js/custom.js"></script>
 </body>
 </html>

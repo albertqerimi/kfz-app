@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    updateRemoveButtons();
+
     function hideAlertsAfterDelay(selector, delay) {
         setTimeout(function () {
             const alerts = document.querySelectorAll(selector);
@@ -62,14 +64,13 @@ $(document).ready(function() {
                 <input type="number" class="form-control w-50" name="quantities[]" min="0.1" step="0.1" required>
                 <select name="quantity_types[]" class="form-control w-50 ml-2">
                     <option value="Stk">Stk</option>
-                    <option value="Litre">Litre</option>
+                    <option value="Liter">Liter</option>
                     <option value="Stunde">Std</option>
                     <option value="Pauschal">Pauschal</option>
                     <option value="Tag(e)">Tag(e)</option>
                     <option value="Kilogram">Kilogram</option>
                     <option value="Meter">Meter</option>
                     <option value="Paket">Paket</option>
-
                 </select>
 
             </div>
@@ -80,7 +81,7 @@ $(document).ready(function() {
                 <input type="text" class="form-control" name="totals[]" readonly>
             </div>
             <div class="col-12 col-sm-2">
-                <button type="button" class="btn btn-danger remove-product w-100">Remove</button>
+                <button type="button" class="btn btn-danger remove-product w-100">Entfernen</button>
             </div>
             <div class="col-12 mt-2">
                 <textarea class="form-control mb-2" name="descriptions[]" rows="4" placeholder="Geben Sie hier weitere Details ein ..."></textarea>
@@ -94,16 +95,42 @@ $(document).ready(function() {
         
 
     }
-    addProductRow();
-
+    
+    if ($("#productsContainer .product-row").length <= 0) {
+        addProductRow();
+        
+    }
+    
     function updateRemoveButtons() {
         $('.remove-product').off('click').on('click', function() {
+            productIndex--;
             $(this).closest('.product-row').remove();
+            updateProductIndexes();
+            updateTotals();
+            
         });
     }
-
+    function updateProductIndexes() {
+        $('.product-row').each(function(index) {
+            $(this).find('input').each(function() {
+                // Update the name attribute to include the new index
+                const name = $(this).attr('name');
+                if (name) {
+                    const newName = name.replace(/\[\d+\]/, `[${index}]`);
+                    $(this).attr('name', newName);
+                }
+            });
+    
+            // Update the displayed index
+            $(this).find('.index').text(index + 1);
+        });
+    
+        // Optionally, update the product index if needed
+        productIndex = $('.product-row').length;
+    }
     $('#addProduct').on('click', function() {
         addProductRow();
+        updateProductIndexes();
     });
 
 
@@ -151,7 +178,7 @@ $(document).ready(function() {
             }
         });
     });
-}
+    }
     fetchProducts();
    
     $('#client_search').on('focus', function() {
