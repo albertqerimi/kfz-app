@@ -69,10 +69,11 @@ $customer_result = $customer_stmt->get_result();
                             <td><?php echo htmlspecialchars($customer['street'] . ' ' . $customer['house_number'] . ', ' . $customer['postal_code'] . ' ' . $customer['city']); ?></td>
                             <td><?php echo htmlspecialchars($customer['email']); ?></td>
                             <td><?php echo htmlspecialchars($customer['phone']); ?></td>
+                            
                             <td>
-    <a href="edit-client/<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-info btn-sm">Bearbeiten</a>
-    <a href="../vehicles/list/<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-success btn-sm">Fahrzeuge anzeigen</a>
-</td>
+                                <a href="edit_client.php?client_id=<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-info btn-sm">Bearbeiten</a>
+                                <a href="../vehicles/list.php?client_id=<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-success btn-sm">Fahrzeuge anzeigen</a> 
+                            </td>
 
                         </tr>
                     <?php endwhile; ?>
