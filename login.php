@@ -1,9 +1,9 @@
 <?php
 session_start();
-include 'config.php'; // Include your config file
+include 'config.php'; // Konfigurationsdatei einfügen
 
 if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php"); // Redirect if logged in
+    header("Location: dashboard.php"); // Umleiten, wenn eingeloggt
     exit;
 }
 
@@ -13,18 +13,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Database connection
+    // Datenbankverbindung
     try {
         $conn = new mysqli(DB_SERVER, DB_USER, DB_PASSWORD, DB_DATABASE);
 
-        // Check for connection error
+        // Überprüfen auf Verbindungsfehler
         if ($conn->connect_error) {
-            throw new Exception("Database connection failed.");
+            throw new Exception("Datenbankverbindung fehlgeschlagen.");
         }
     } catch (Exception $e) {
-        // Log the error message instead of displaying it
+        // Fehlermeldung protokollieren, anstatt sie anzuzeigen
         error_log($e->getMessage());
-        $error = "Unable to connect to the database. Please try again later.";
+        $error = "Kann nicht mit der Datenbank verbinden. Bitte versuchen Sie es später erneut.";
     }
 
     if (empty($error)) {
@@ -41,10 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("Location: index.php");
                 exit;
             } else {
-                $error = "Invalid username or password.";
+                $error = "Ungültiger Benutzername oder Passwort.";
             }
         } else {
-            $error = "Invalid username or password.";
+            $error = "Ungültiger Benutzername oder Passwort.";
         }
 
         $stmt->close();
@@ -54,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Login</title>
+    <title>Anmelden</title>
     <style>
         .login-container {
             max-width: 400px;
@@ -73,20 +73,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 <div class="container mt-5">
     <div class="login-container bg-light">
-        <h2 class="text-center">Login</h2>
+        <h2 class="text-center">Anmelden</h2>
         <?php if ($error): ?>
             <div class="alert alert-danger"><?= $error; ?></div>
         <?php endif; ?>
         <form method="POST">
             <div class="form-group">
-                <label for="username">Username</label>
+                <label for="username">Benutzername</label>
                 <input type="text" class="form-control" name="username" required>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password">Passwort</label>
                 <input type="password" class="form-control" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
+            <button type="submit" class="btn btn-primary btn-block">Anmelden</button>
         </form>
     </div>
 </div>
