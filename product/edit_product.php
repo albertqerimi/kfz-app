@@ -49,22 +49,23 @@ $stmt->close();
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <h2>Edit Product</h2>
+            <h2>Produkt bearbeiten</h2>
             <form method="post">
                 <div class="mb-3">
-                    <label for="name" class="form-label">Product Name:</label>
+                    <label for="name" class="form-label">Produktname:</label>
                     <input type="text" id="name" name="name" class="form-control" value="<?php echo htmlspecialchars($product['name']); ?>" required>
                 </div>
                 <div class="mb-3">
-                    <label for="description" class="form-label">Description:</label>
+                    <label for="description" class="form-label">Beschreibung:</label>
                     <textarea id="description" name="description" class="form-control" rows="5"><?php echo htmlspecialchars($product['description']); ?></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a href="list_products.php" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+                <a href="list_products.php" class="btn btn-secondary">Abbrechen</a>
             </form>
         </div>
     </div>
 </div>
+
 
 
 <?php

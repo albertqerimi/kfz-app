@@ -38,26 +38,29 @@ $products_result = $stmt->get_result();
         <a href="/kfz-app/product/add_product.php" class="btn btn-primary">Produkt hinzufügen</a>
     </form>
     <h4 class="mt-4">Vorhandene Produkte</h4>
-    <table class="table responsive-table table-striped">
-        <thead>
-            <tr>
-                <th>Produktname</th>
-                <th>Beschreibung</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($product = $products_result->fetch_assoc()): ?>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td><?php echo htmlspecialchars($product['name']); ?></td>
-                    <td><?php echo htmlspecialchars($product['description']); ?></td>
-                    <td>
-                        <a href="edit_product.php?id=<?php echo urlencode($product['id']); ?>" class="btn btn-sm btn-warning">Bearbeiten</a>
-                    </td>
+                    <th>Produktname</th>
+                    <th>Beschreibung</th>
+                    <th>Aktionen</th>
                 </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php while ($product = $products_result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($product['name']); ?></td>
+                        <td><?php echo htmlspecialchars($product['description']); ?></td>
+                        <td>
+                            <a href="edit_product.php?id=<?php echo urlencode($product['id']); ?>" class="btn btn-sm btn-warning">Bearbeiten</a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+   
 
     <!-- Pagination -->
     <?php

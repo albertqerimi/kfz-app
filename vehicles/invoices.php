@@ -43,45 +43,46 @@ $invoices_result = $stmt->get_result();
 <div class="container mt-4">
 
     <?php if ($invoices_result->num_rows > 0): ?>
-        
-        <table class="table table-striped table-responsive">
-            
-            <tbody>
-            <?php if ($invoices_result->num_rows > 0): ?>
-                <div class="container mt-4">
-                    <h2 class="text-center mb-4">Rechnungen für Auto <?php echo  $auto['license_plate']; ?></h2>
-                        <thead>
-                            <tr>
-                                <th>Rechnungs-ID</th>
-                                <th>Rechnungsdatum</th>
-                            
-                                <th>Rabatt</th>
-                                <th>Gesamtbetrag</th>
-                                <th>Zahlungsart</th>
-                                <th>Aktionen</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php while ($invoice = $invoices_result->fetch_assoc()): ?>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                
+                <tbody>
+                <?php if ($invoices_result->num_rows > 0): ?>
+                    <div class="container mt-4">
+                        <h2 class="text-center mb-4">Rechnungen für Auto <?php echo  $auto['license_plate']; ?></h2>
+                            <thead>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($invoice['id']); ?></td>
-                                    <td><?php echo htmlspecialchars(date('d.m.Y', strtotime($invoice['date']))); ?></td>
-                                    <td><?php echo htmlspecialchars(number_format($invoice['discount'], 2, ',', '.')); ?> €</td>
-                                    <td><?php echo htmlspecialchars(number_format($invoice['total_amount'], 2, ',', '.')); ?> €</td>
-                                    <td><?php echo htmlspecialchars($invoice['payment_form']); ?></td>
-                                    <td>
-                                        <a href="../invoice/view_invoice.php?invoice_id=<?php echo urlencode($invoice['id']); ?>" class="btn btn-secondary btn-sm">Anzeigen</a>
-                                    </td>
+                                    <th>Rechnungs-ID</th>
+                                    <th>Rechnungsdatum</th>
+                                
+                                    <th>Rabatt</th>
+                                    <th>Gesamtbetrag</th>
+                                    <th>Zahlungsart</th>
+                                    <th>Aktionen</th>
                                 </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                </div>
-            <?php else: ?>
-                <div class="alert alert-info mt-4">Keine Rechnungen gefunden.</div>
-            <?php endif; ?>
+                            </thead>
+                            <tbody>
+                                <?php while ($invoice = $invoices_result->fetch_assoc()): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($invoice['id']); ?></td>
+                                        <td><?php echo htmlspecialchars(date('d.m.Y', strtotime($invoice['date']))); ?></td>
+                                        <td><?php echo htmlspecialchars(number_format($invoice['discount'], 2, ',', '.')); ?> €</td>
+                                        <td><?php echo htmlspecialchars(number_format($invoice['total_amount'], 2, ',', '.')); ?> €</td>
+                                        <td><?php echo htmlspecialchars($invoice['payment_form']); ?></td>
+                                        <td>
+                                            <a href="../invoice/view_invoice.php?invoice_id=<?php echo urlencode($invoice['id']); ?>" class="btn btn-secondary btn-sm">Anzeigen</a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-info mt-4">Keine Rechnungen gefunden.</div>
+                <?php endif; ?>
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
        
     <?php else: ?>
         <div class="alert alert-info">Keine Rechnungen gefunden</div>

@@ -113,20 +113,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         }
         
-        //header("Location: view_invoice.php?invoice_id=$invoice_id");
-       // exit;  // Ensure no further code is executed after the redirect
+        header("Location: view_invoice.php?invoice_id=$invoice_id");
+        exit;  // Ensure no further code is executed after the redirect
         echo "<div class='alert alert-success'>Rechnung erfolgreich erstellt.</div>";
     } else {
         echo "<div class='alert alert-danger'>Error creating invoice: " . $conn->error . "</div>";
     }
 }
 
-// Fetch clients and autos data for the form
-$clients_sql = "SELECT id, name FROM clients";
-$clients_result = $conn->query($clients_sql);
 
-$autos_sql = "SELECT id, license_plate, model FROM vehicles";
-$autos_result = $conn->query($autos_sql);
 ?>
 
 <div class="container mt-4">

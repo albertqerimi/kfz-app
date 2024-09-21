@@ -47,42 +47,45 @@ $customer_result = $customer_stmt->get_result();
         <button type="submit" class="btn btn-primary">Suche</button>
         <a href="/kfz-app/client/register_client.php" class="btn btn-primary">Kunde Registrieren</a>
     </form>
-
-    <table class="table table-striped mt-3 table-responsive">
-        <thead>
-            <tr>
-                <th>Kundennummer</th>
-                <th>Kundenname</th>
-                <th>Adresse</th>
-                <th>E-Mail</th>
-                <th>Telefon</th>
-                <th width="260px">Aktionen</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ($customer_result->num_rows > 0): ?>
-                <?php while ($customer = $customer_result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($customer['kundennummer']); ?></td>
-                        <td><?php echo htmlspecialchars($customer['name']); ?></td>
-                        <td><?php echo htmlspecialchars($customer['street'] . ' ' . $customer['house_number'] . ', ' . $customer['postal_code'] . ' ' . $customer['city']); ?></td>
-                        <td><?php echo htmlspecialchars($customer['email']); ?></td>
-                        <td><?php echo htmlspecialchars($customer['phone']); ?></td>
-                        <td>
-                            <a href="edit_client.php?client_id=<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-info btn-sm">Bearbeiten</a>
-                            <a href="../vehicles/list.php?client_id=<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-success btn-sm">Fahrzeuge anzeigen</a> 
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
+    <div class="table-responsive">
+        <table class="table table-striped mt-3">
+            <thead>
                 <tr>
-                    <td colspan="6" class="text-center">Keine Kunden gefunden</td>
-                </tr>
-            <?php endif; ?>
+                    <th>Kundennummer</th>
+                    <th>Kundenname</th>
+                    <th>Adresse</th>
+                    <th>E-Mail</th>
+                    <th>Telefon</th>
+                    <th width="260px">Aktionen</th>
 
-        </tbody>
-    </table>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($customer_result->num_rows > 0): ?>
+                    <?php while ($customer = $customer_result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($customer['kundennummer']); ?></td>
+                            <td><?php echo htmlspecialchars($customer['name']); ?></td>
+                            <td><?php echo htmlspecialchars($customer['street'] . ' ' . $customer['house_number'] . ', ' . $customer['postal_code'] . ' ' . $customer['city']); ?></td>
+                            <td><?php echo htmlspecialchars($customer['email']); ?></td>
+                            <td><?php echo htmlspecialchars($customer['phone']); ?></td>
+                            <td>
+    <a href="edit-client/<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-info btn-sm">Bearbeiten</a>
+    <a href="../vehicles/list/<?php echo htmlspecialchars($customer['id']); ?>" class="btn btn-success btn-sm">Fahrzeuge anzeigen</a>
+</td>
+
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="6" class="text-center">Keine Kunden gefunden</td>
+                    </tr>
+                <?php endif; ?>
+
+            </tbody>
+        </table>
+    </div>
+    
 
     <!-- Pagination -->
     <nav aria-label="Page navigation">
