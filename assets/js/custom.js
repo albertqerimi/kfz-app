@@ -66,7 +66,6 @@ $(document).ready(function() {
                     <option value="Stk">Stk</option>
                     <option value="Liter">Liter</option>
                     <option value="Stunde">Std</option>
-                    <option value="Pauschal">Pauschal</option>
                     <option value="Tag(e)">Tag(e)</option>
                     <option value="Kilogram">Kilogram</option>
                     <option value="Meter">Meter</option>

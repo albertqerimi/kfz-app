@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS invoice_items (
     product_name VARCHAR(255) NOT NULL,
     product_description TEXT,
     quantity DECIMAL(10,2) NOT NULL,
-    quantity_type ENUM('Stk', 'Liter', 'Stunde', 'Pauschal', 'Days') NOT NULL DEFAULT 'stk',
+    quantity_type ENUM('Stk', 'Liter', 'Stunde', 'Tag(e)', 'Kilogram', 'Meter', 'Paket') NOT NULL DEFAULT 'Stk',
     price DECIMAL(10,2) NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,

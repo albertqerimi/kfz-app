@@ -281,9 +281,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="number" class="form-control w-50" name="quantities[]" min="0.1" step="0.1" value="<?php echo htmlspecialchars($item['quantity']); ?>" required>
                         <select name="quantity_types[]" class="form-control w-50 ml-2">
                             <option value="Stk" <?php echo (htmlspecialchars($item['quantity_type']) == 'Stk') ? 'selected' : ''; ?>>Stk</option>
-                            <option value="Litre" <?php echo (htmlspecialchars($item['quantity_type']) == 'Litre') ? 'selected' : ''; ?>>Litre</option>
+                            <option value="Liter" <?php echo (htmlspecialchars($item['quantity_type']) == 'Liter') ? 'selected' : ''; ?>>Liter</option>
                             <option value="Stunde" <?php echo (htmlspecialchars($item['quantity_type']) == 'Stunde') ? 'selected' : ''; ?>>Std</option>
-                            <option value="Pauschal" <?php echo (htmlspecialchars($item['quantity_type']) == 'Pauschal') ? 'selected' : ''; ?>>Pauschal</option>
                             <option value="Tag(e)" <?php echo (htmlspecialchars($item['quantity_type']) == 'Tag(e)') ? 'selected' : ''; ?>>Tag(e)</option>
                             <option value="Kilogram" <?php echo (htmlspecialchars($item['quantity_type']) == 'Kilogram') ? 'selected' : ''; ?>>Kilogram</option>
                             <option value="Meter" <?php echo (htmlspecialchars($item['quantity_type']) == 'Meter') ? 'selected' : ''; ?>>Meter</option>
