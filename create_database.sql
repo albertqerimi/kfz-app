@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS vehicles (
     model VARCHAR(100),
     year INT(11),
     vin VARCHAR(50) NOT NULL UNIQUE,
+    hsn VARCHAR(10),    
+    tsn VARCHAR(10),
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
     tuv_date DATE
 );

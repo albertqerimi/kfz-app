@@ -81,9 +81,9 @@ $stmt->close();
                             <td><?php echo htmlspecialchars($row['license_plate']); ?></td>
                             <td><?php echo htmlspecialchars($row['tuv_date']); ?></td>
                             <td>
-    <a href="/kfz-app/edit.php?id=<?php echo urlencode($row['id']); ?>" class="btn btn-primary btn-sm">Bearbeiten</a>
-    <a href="/kfz-app/invoices.php?vehicle_id=<?php echo urlencode($row['id']); ?>" class="btn btn-danger btn-sm">Rechnungen</a>
-</td>
+                            <a href="edit.php?id=<?php echo urlencode($row['id']); ?>" class="btn btn-primary btn-sm">Bearbeiten</a>
+                            <a href="invoices.php?vehicle_id=<?php echo urlencode($row['id']); ?>" class="btn btn-danger btn-sm">Rechnungen</a>
+                            </td>
 
                         </tr>
                     <?php endwhile; ?>

@@ -45,7 +45,7 @@ session_start();
                 <li class="nav-item">
                     <a class="nav-link" href="/kfz-app/product/list_products.php">Produkte</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item  d-none">
                     <a class=" btn btn-primary" href="/kfz-app/logout.php" role="button">
                         Ausloggen
                     </a>

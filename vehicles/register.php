@@ -56,6 +56,14 @@ if ($client_result->num_rows > 0) {
             <input type="text" class="form-control" id="vin_number" name="vin_number" required>
         </div>
         <div class="form-group">
+            <label for="tsn"> Typ-Schlüsselnummer (TSN ):</label>
+            <input type="text" class="form-control" id="tsn" name="tsn">
+        </div>
+        <div class="form-group">
+            <label for="hsn">Hersteller-Schlüsselnummer (HSN):</label>
+            <input type="text" class="form-control" id="hsn" name="hsn">
+        </div>
+        <div class="form-group">
             <label for="brand">Marke:</label>
             <input type="text" class="form-control" id="brand" name="brand" required>
         </div>

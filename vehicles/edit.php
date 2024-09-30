@@ -35,25 +35,30 @@ $auto = $auto_result->fetch_assoc();
 
 // Handle form submission for updating the auto
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Retrieve and sanitize POST data
     $vin = $_POST['vin'];
     $brand = $_POST['brand'];
     $model = $_POST['model'];
     $year = $_POST['year'];
     $license_plate = $_POST['license_plate'];
-    $tuv = $_POST['tuv_date'];
+    $tuv = !empty($_POST['tuv_date']) ? $_POST['tuv_date'] : null; 
+    $tsn = isset($_POST['tsn']) ? $_POST['tsn'] : '';
+    $hsn = isset($_POST['hsn']) ? $_POST['hsn'] : '';
 
-    // Update the auto in the database
-    $update_sql = "UPDATE vehicles SET vin = ?, brand = ?, model = ?, year = ?, license_plate = ?,tuv_date = ? WHERE id = ?";
+    $update_sql = "UPDATE vehicles SET vin = ?, brand = ?, model = ?, year = ?, license_plate = ?, tuv_date = ?, tsn = ?, hsn = ? WHERE id = ?";
     $update_stmt = $conn->prepare($update_sql);
-    $update_stmt->bind_param('ssssssi', $vin, $brand, $model, $year, $license_plate,$tuv, $auto_id);
+    
+    $update_stmt->bind_param('ssssssssi', $vin, $brand, $model, $year, $license_plate, $tuv, $tsn, $hsn, $auto_id);
 
+    // Execute the update and check for errors
     if ($update_stmt->execute()) {
         header("Location: edit.php?id=" . urlencode($auto_id) . "&success=true");
         exit;
     } else {
-        echo "<div class='container mt-4'><div class='alert alert-danger'>Fehler beim Aktualisieren des Autos: " . $conn->error . "</div></div>";
+        echo "<div class='container mt-4'><div class='alert alert-danger'>Fehler beim Aktualisieren des Autos: " . $update_stmt->error . "</div></div>";
     }
 }
+
 
 ?>
 
@@ -63,6 +68,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="form-group">
             <label for="vin">Fahrgestellnummer (VIN):</label>
             <input type="text" class="form-control" id="vin" name="vin" value="<?php echo htmlspecialchars($auto['vin']); ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="tsn">Typ-Schlüsselnummer (TSN):</label>
+            <input type="text" class="form-control" id="tsn" name="tsn" value="<?php echo htmlspecialchars($auto['tsn']); ?>">
+        </div>
+        <div class="form-group">
+            <label for="hsn">Hersteller-Schlüsselnummer (HSN):</label>
+            <input type="text" class="form-control" id="hsn" name="hsn" value="<?php echo htmlspecialchars($auto['hsn']); ?>" >
         </div>
         <div class="form-group">
             <label for="brand">Marke:</label>
@@ -82,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
         <div class="form-group">
             <label for="tuv_date">TÜV Ablaufdatum:</label>
-            <input type="date" class="form-control" id="tuv_date" name="tuv_date">
+            <input type="date" class="form-control" id="tuv_date" name="tuv_date" value="<?php echo htmlspecialchars($auto['tuv_date']); ?>">
         </div>
         <button type="submit" class="btn btn-primary">Änderungen speichern</button>
         <a href="../vehicles/list.php?client_id=<?php echo htmlspecialchars($auto['client_id']); ?>" class="btn btn-secondary">Zurück</a>

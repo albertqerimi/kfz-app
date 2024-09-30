@@ -20,6 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tuv_date = isset($_POST['tuv_date']) ? $_POST['tuv_date'] : '';
     $year = isset($_POST['year']) ? $_POST['year'] : '';
     $client_id = isset($_POST['client_id']) ? $_POST['client_id'] : ''; // Assuming you have a client ID
+    $hsn = isset($_POST['hsn']) ? $_POST['hsn'] : ''; 
+    $tsn = isset($_POST['tsn']) ? $_POST['tsn'] : ''; 
 
     
     if (empty($vin_number) && empty($brand) && empty($model) && empty($license_plate) && empty($tuv_date)) {
@@ -59,8 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
     // Prepare SQL statement
-    $sql = "INSERT INTO vehicles (client_id, vin, brand, model,year, license_plate, tuv_date) 
-            VALUES (?, ?, ?, ?, ?,?, ?)";
+    $sql = "INSERT INTO vehicles (client_id, vin, brand, model,year, license_plate, tuv_date,hsn,tsn) 
+            VALUES (?, ?, ?, ?, ?,?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
 
@@ -69,14 +71,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Bind parameters
-    $stmt->bind_param('issssss', 
+    $stmt->bind_param('issssssss', 
         $client_id, 
         $vin_number, 
         $brand, 
         $model, 
         $year,
         $license_plate, 
-        $tuv_date
+        $tuv_date,
+        $hsn,
+        $tsn
     );
    
     
