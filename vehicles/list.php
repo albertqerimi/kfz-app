@@ -28,7 +28,7 @@ if ($client_result->num_rows > 0) {
     $client_name = htmlspecialchars($client_row['name']);
     $kdnr = htmlspecialchars($client_row['kundennummer']);
 } else {
-    die("<div class='alert alert-danger'>Client not found.</div>");
+    die("<div class='alert alert-danger'>Kein Kunde Gefunden.</div>");
 }
 
 // Fetch the vehicles for the client

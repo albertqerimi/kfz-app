@@ -70,28 +70,27 @@ $kundennummer = generate_kundennummer($conn);
         </div>
 
         <div class="form-group">
-        <label for="country">Land:</label>
-        <select class="form-control" id="country" name="country">
-        <option value="Deutschland">Deutschland </option>
-        <option value="Österreich">Österreich</option>
-        <option value="Frankreich">Frankreich</option>
-        <option value="Italien">Italien </option>
-        <option value="Spanien">Spanien</option>
-        <option value="Niederlande">Niederlande</option>
-        <option value="Belgien">Belgien</option>
-        <option value="Schweiz">Schweiz </option>
-        <option value="Schweden">Schweden </option>
-        <option value="Norwegen">Norwegen </option>
-        <option value="Dänemark">Dänemark </option>
-        <option value="Finnland">Finnland </option>
-        <option value="Irland">Irland </option>
-        <option value="Polen">Polen </option>
-        <option value="Tschechien">Tschechien </option>
-        <option value="Ungarn">Ungarn </option>
+            <label for="country">Land:</label>
+            <select class="form-control" id="country" name="country">
+            <option value="Deutschland">Deutschland </option>
+            <option value="Österreich">Österreich</option>
+            <option value="Frankreich">Frankreich</option>
+            <option value="Italien">Italien </option>
+            <option value="Spanien">Spanien</option>
+            <option value="Niederlande">Niederlande</option>
+            <option value="Belgien">Belgien</option>
+            <option value="Schweiz">Schweiz </option>
+            <option value="Schweden">Schweden </option>
+            <option value="Norwegen">Norwegen </option>
+            <option value="Dänemark">Dänemark </option>
+            <option value="Finnland">Finnland </option>
+            <option value="Irland">Irland </option>
+            <option value="Polen">Polen </option>
+            <option value="Tschechien">Tschechien </option>
+            <option value="Ungarn">Ungarn </option>
 
-            <!-- Add more countries as needed -->
-        </select>
-    </div>
+            </select>
+        </div>
 
 
         <!-- Contact Information -->
@@ -110,6 +109,14 @@ $kundennummer = generate_kundennummer($conn);
         <div class="form-group">
             <label for="vin_number">Fahrgestellnummer (VIN):</label>
             <input type="text" class="form-control" id="vin_number" name="vin_number">
+        </div>
+        <div class="form-group">
+            <label for="tsn">Typ-Schlüsselnummer (TSN):</label>
+            <input type="text" class="form-control" id="tsn" name="tsn">
+        </div>
+        <div class="form-group">
+            <label for="hsn">Hersteller-Schlüsselnummer (HSN):</label>
+            <input type="text" class="form-control" id="hsn" name="hsn">
         </div>
         <div class="form-group">
             <label for="brand">Marke:</label>

@@ -47,11 +47,14 @@ if ($stmt_client->execute()) {
     $model = isset($_POST['model']) ? $_POST['model'] : '';
     $license_plate = isset($_POST['license_plate']) ? $_POST['license_plate'] : '';
     $tuv_date = isset($_POST['tuv_date']) ? $_POST['tuv_date'] : '';
+    $tsn = isset($_POST['tsn']) ? $_POST['tsn'] : '';
+    $hsn = isset($_POST['hsn']) ? $_POST['hsn'] : '';
+
 
     if (!empty($vin_number) || !empty($brand) || !empty($model) || !empty($license_plate) || !empty($tuv_date)) {
         // Only insert vehicle if at least one field is filled
-        $sql_vehicle = "INSERT INTO vehicles (client_id, vin, brand, model, license_plate, tuv_date)
-                        VALUES (?, ?, ?, ?, ?, ?)";
+        $sql_vehicle = "INSERT INTO vehicles (client_id, vin, brand, model, license_plate, tuv_date, tsn, hsn)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt_vehicle = $conn->prepare($sql_vehicle);
 
@@ -60,13 +63,15 @@ if ($stmt_client->execute()) {
         }
 
         // Bind parameters for vehicle
-        $stmt_vehicle->bind_param('isssss', 
+        $stmt_vehicle->bind_param('isssssss', 
             $client_id, 
             $vin_number, 
             $brand, 
             $model, 
             $license_plate, 
-            $tuv_date
+            $tuv_date,
+            $tsn,
+            $hsn,
         );
 
         if ($stmt_vehicle->execute()) {

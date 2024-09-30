@@ -70,7 +70,7 @@ $invoices_result = $stmt->get_result();
                                         <td><?php echo htmlspecialchars(number_format($invoice['total_amount'], 2, ',', '.')); ?> €</td>
                                         <td><?php echo htmlspecialchars($invoice['payment_form']); ?></td>
                                         <td>
-                                            <a href="../invoice/view_invoice.php?invoice_id=<?php echo urlencode($invoice['id']); ?>" class="btn btn-secondary btn-sm">Anzeigen</a>
+                                            <a href="../invoice/view_invoice.php?invoice_id=<?php echo urlencode($invoice['id']); ?>" class="btn btn-primary btn-sm">Anzeigen</a>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
