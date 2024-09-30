@@ -28,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $total_amount = floatval($_POST['total_amount']);
     $tax_rate = 0.19;
     $sub_total = $_POST['total_amount_without_tax'];
+    $km_stand = !empty($_POST['km_stand']) ? floatval($_POST['km_stand']) : null;
 
     // Calculate tax
     $tax = ($total_amount / (1 + $tax_rate)) * $tax_rate;
@@ -38,15 +39,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $vehicle_id = NULL; // Use NULL to represent no vehicle
     }
 
-    $invoice_sql = "INSERT INTO invoices (client_id, date, due_date, payment_form, sub_total, total_amount, discount, tax, vehicle_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $invoice_sql = "INSERT INTO invoices (client_id, date, due_date, payment_form, sub_total, total_amount, discount, tax, vehicle_id, km_stand) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     // Prepare the statement
     $stmt = $conn->prepare($invoice_sql);
 
     // Bind parameters
     $stmt->bind_param(
-        "isssddidi", 
+        "isssddidid", 
         $client_id,       // i = integer
         $date,            // s = string (date in 'Y-m-d' format)
         $due_date,        // s = string (date in 'Y-m-d' format) or NULL
@@ -55,7 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $total_amount,    // d = double
         $discount,        // d = double
         $tax,             // d = double
-        $vehicle_id       // i = integer or NULL
+        $vehicle_id,      // i = integer or NULL
+        $km_stand       // i = decimal or NULL
     );
     
     if ($stmt->execute()) {
@@ -145,6 +147,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <select id="vehicle_id" name="vehicle_id" class="form-control" required>
                 <option value="0">Bar Verkauf</option>
             </select>
+        </div>
+
+        <div class="form-group km_stand d-none">
+            <label for="km_stand">Kilometerstand </label>
+            <input type="text" id="km_stand" name="km_stand" class="form-control" placeholder="Kilometerstand">
         </div>
 
         <!-- Date input -->

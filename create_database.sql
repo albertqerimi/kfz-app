@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS invoices (
     tax DECIMAL(10,2),
     total_amount DECIMAL(10,2) NOT NULL,
     payment_form VARCHAR(50), 
+    km_stand DECIMAL(10, 2),
     currency VARCHAR(10) DEFAULT 'EUR',
     status ENUM('Paid', 'Unpaid', 'Cancelled') DEFAULT 'Unpaid',
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,

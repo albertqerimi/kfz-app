@@ -158,11 +158,13 @@ if (!empty($invoice['vehicle_id'])) {
 
     // Check if vehicle details are retrieved successfully
     if ($vehicle) {
+        
         $pdf->Ln(8); // Add a line break
         // Format vehicle details for PDF output
         $vehicleDetails = "Kennzeichen: " . htmlspecialchars($vehicle['license_plate']) . "\n" .
         "Marke: " . htmlspecialchars($vehicle['brand']) . "\n" .
-        "Modell: " . htmlspecialchars($vehicle['model']);
+        "Modell: " . htmlspecialchars($vehicle['model']) . "\n" .
+        "Kilometerstand: " . htmlspecialchars($invoice['km_stand']);
 
         // Add vehicle details to the PDF
         $pdf->MultiCell(0, 5,   $vehicleDetails, 0, 'R');
@@ -294,10 +296,10 @@ while ($item = $items_result->fetch_assoc()) {
     $pdf->Ln(1);    $pdf->SetTextColor(0, 0, 0); // Reset color
 
     // Calculate the height of the description cell
-    $descriptionHeight = $pdf->GetY() - ($y + $productNameHeight);
+    $descriptionHeight = $pdf->GetY() - ($y + $productNameHeight) +7;
 
     // Calculate the height of the row
-    $row_height = max($productNameHeight, $descriptionHeight) +6;
+    $row_height = max($productNameHeight, $descriptionHeight) ;
     $pdf->SetXY($x + $colWidths['Produkt'], $y);
 
     // Print quantity, price, and total cells

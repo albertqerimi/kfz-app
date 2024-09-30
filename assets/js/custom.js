@@ -227,5 +227,14 @@ $(document).ready(function() {
         });
     }
 
+    
+    jQuery('#vehicle_id').change(function() {
+        if (jQuery(this).val() && jQuery(this).val() !== "0") {
+            jQuery('.km_stand.d-none').removeClass('d-none');
+        } else {
+            jQuery('.km_stand').addClass('d-none');
+        }
+    });
+
 
 });
