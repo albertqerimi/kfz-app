@@ -20,6 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Retrieve and sanitize POST data
     $client_id = intval($_POST['client_id']);
+
+    $query = "SELECT id FROM clients WHERE id = ?";
+    $client = $conn->prepare($query);
+    $client->bind_param('i', $client_id);
+    $client->execute();
+    $cleint_result = $client->get_result();
+
+    if ($cleint_result->num_rows == 0) {
+        echo "<div class='alert alert-danger'>Der Kunde existiert nicht. Bitte registrieren Sie den Kunden und wählen Sie ihn aus der Dropdown-Liste aus.</div>";
+        die;
+    }
     $vehicle_id = isset($_POST['vehicle_id']) ? intval($_POST['vehicle_id']) : null;
     $date = $_POST['date'];
     $due_date = !empty($_POST['due_date']) ? $_POST['due_date'] : null;
@@ -114,10 +125,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $item_stmt->execute();
             
         }
-        
-        header("Location: view_invoice.php?invoice_id=$invoice_id");
-        exit;  // Ensure no further code is executed after the redirect
-        echo "<div class='alert alert-success'>Rechnung erfolgreich erstellt.</div>";
+        ?>
+        <script type="text/javascript">
+            window.open('view_invoice.php?invoice_id=<?php echo $invoice_id; ?>', '_blank'); 
+            window.location.href = 'list_invoices.php'; 
+        </script>
+        <?php
+       
     } else {
         echo "<div class='alert alert-danger'>Error creating invoice: " . $conn->error . "</div>";
     }
@@ -135,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Client search and selection -->
         <div class="form-group">
             <label for="client_search">Kunde</label>
-            <input type="text" id="client_search" class="form-control" placeholder="Suche nach Kunden" required>
+            <input type="text" id="client_search" class="form-control" placeholder="Suche nach Kunden" required autocomplete="off">
             <div id="client_list" class="mt-2" style="display: none; border: 1px solid #ddd; max-height: 200px; overflow-y: auto;">
                 <ul id="client_list_items" class="list-group"></ul>
             </div>

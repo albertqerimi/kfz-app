@@ -163,9 +163,10 @@ if (!empty($invoice['vehicle_id'])) {
         // Format vehicle details for PDF output
         $vehicleDetails = "Kennzeichen: " . htmlspecialchars($vehicle['license_plate']) . "\n" .
         "Marke: " . htmlspecialchars($vehicle['brand']) . "\n" .
-        "Modell: " . htmlspecialchars($vehicle['model']) . "\n" .
-        "Kilometerstand: " . htmlspecialchars($invoice['km_stand']);
-
+        "Modell: " . htmlspecialchars($vehicle['model']) . "\n" ;
+        if (!empty($invoice['km_stand'])) {
+            $vehicleDetails .= "Kilometerstand: " . htmlspecialchars($invoice['km_stand']) . "\n";
+        }
         // Add vehicle details to the PDF
         $pdf->MultiCell(0, 5,   $vehicleDetails, 0, 'R');
     } 

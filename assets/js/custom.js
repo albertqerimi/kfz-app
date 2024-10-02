@@ -238,3 +238,10 @@ $(document).ready(function() {
 
 
 });
+
+window.onload = function() {
+    var form = document.getElementById("invoiceForm");
+    if (form) {
+        form.reset();
+    }
+};

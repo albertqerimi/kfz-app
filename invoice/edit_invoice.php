@@ -61,6 +61,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tax_rate = 0.19;
     $tax = ($total_amount / (1 + $tax_rate)) * $tax_rate;
     $client_id = isset($_POST['client_id']) ? intval($_POST['client_id']) : 0;
+    $query = "SELECT id FROM clients WHERE id = ?";
+    $client = $conn->prepare($query);
+    $client->bind_param('i', $client_id);
+    $client->execute();
+    $cleint_result = $client->get_result();
+
+    if ($cleint_result->num_rows == 0) {
+        echo "<div class='alert alert-danger'>Der Kunde existiert nicht. Bitte registrieren Sie den Kunden und wählen Sie ihn aus der Dropdown-Liste aus.</div>";
+        die;
+    }
     $vehicle_id = isset($_POST['vehicle_id']) && intval($_POST['vehicle_id']) > 0 ? intval($_POST['vehicle_id']) : NULL;
     
     $discount = !empty($_POST['discount']) ? floatval($_POST['discount']) : 0.0;

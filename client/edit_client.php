@@ -124,20 +124,19 @@ if (isset($_GET['success'])): ?>
         </div>
 
         <!-- Contact Information -->
-        <h4>Contact Information</h4>
+        <h4>Kontaktinformation</h4>
         <div class="form-group">
-            <label for="phone">Telephone:</label>
+            <label for="phone">Telefon:</label>
             <input type="tel" class="form-control" id="phone" name="phone" value="<?php echo htmlspecialchars($client['phone']); ?>">
         </div>
         <div class="form-group">
-            <label for="email">Email:</label>
+            <label for="email">E-Mail:</label>
             <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($client['email']); ?>" >
         </div>
 
-
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">Update Client</button>
-        <a href="list_clients.php" class="btn btn-secondary">Back to List</a>
+        <button type="submit" class="btn btn-primary">Kunde aktualisieren</button>
+        <a href="list_clients.php" class="btn btn-secondary">Zurück zur Liste</a>
     </form>
 </div>
 
