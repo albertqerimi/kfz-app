@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
 -- Create invoices table
 CREATE TABLE IF NOT EXISTS invoices (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    client_id INT(11) NOT NULL,
+    client_id INT(11) NULL,
     date DATE NOT NULL,
     due_date DATE,
     discount DECIMAL(10,2),
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS invoices (
     km_stand DECIMAL(10, 2),
     currency VARCHAR(10) DEFAULT 'EUR',
     status ENUM('Paid', 'Unpaid', 'Cancelled') DEFAULT 'Unpaid',
-    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL,
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE SET NULL
 );
 
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS invoice_items (
     price DECIMAL(10,2) NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE NO ACTION
 );
 
 -- Create users table

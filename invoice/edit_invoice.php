@@ -16,6 +16,10 @@ $stmt->bind_param("i", $invoice_id);
 $stmt->execute();
 $invoice_result = $stmt->get_result();
 $invoice = $invoice_result->fetch_assoc();
+if (empty($invoice)) {
+    echo "Invalid Rechnguns ID";
+    die;
+}
 
 $items_sql = "SELECT * FROM invoice_items WHERE invoice_id = ?";
 $items_stmt = $conn->prepare($items_sql);
@@ -218,6 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 ?>
 <div class="container mt-4">
+   
     <h2>Rechnung bearbeiten</h2>
     
     <form id="invoiceForm" action="edit_invoice.php?invoice_id=<?php echo $invoice_id; ?>" method="post">
